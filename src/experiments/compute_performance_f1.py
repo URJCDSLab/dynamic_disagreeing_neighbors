@@ -5,13 +5,13 @@ import json
 warnings.filterwarnings('ignore')
 
 from sklearn.model_selection import GridSearchCV, train_test_split
-from sklearn.metrics import make_scorer, confusion_matrix
+from sklearn.metrics import f1_score
 from sklearn.preprocessing import StandardScaler
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.svm import SVC
 from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
 
-from src.utils import scaled_mcc, get_store_name, NpEncoder
+from src.utils import get_store_name, NpEncoder
 
 for experiment in [
     'a9a', 
@@ -53,8 +53,10 @@ for experiment in [
     'w8a'
 ]:
     print(f'Experiment: {experiment}\n')
+    
+    score = f1_score
 
-    results_folder = 'results/performance/mcc'
+    results_folder = f'results/performance/{score.__name__}'
     os.makedirs(results_folder, exist_ok=True)
 
     data = pd.read_parquet(f'data/{experiment}.parquet')
@@ -69,8 +71,6 @@ for experiment in [
         y = abs(y - 1)
     y = y.astype(int)
     rng_seed = 1234
-
-    score = make_scorer(scaled_mcc, greater_is_better=True)
 
     methods_mapping = {
         'SVC': SVC,
@@ -110,7 +110,7 @@ for experiment in [
                 'cv_score': clf.best_score_,
                 'cv_score_sd': clf.cv_results_['std_test_score'][clf.best_index_]
             }
-
+            print(f'Best method: {str(method())[:-2]} - CV score: {clf.best_score_}±{clf.cv_results_} \n')
 
             exp_info[experiment]['all_models'].append(model_info)
 
