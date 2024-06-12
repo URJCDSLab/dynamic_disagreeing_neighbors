@@ -82,7 +82,7 @@ for experiment in [
     methods = [
         [SVC, {'C': [1, 10, 100, 1000], 'gamma': [0.0001, 0.001, 0.01, 0.1, 1, 10], 'kernel': ['rbf'], 'random_state': [rng_seed]}],
         [KNeighborsClassifier, {'n_neighbors': list(range(1, 13, 2)), 'n_jobs': [-1]}],
-        [RandomForestClassifier, {'max_features': [None, 'sqrt', 'log2'], 'n_estimators': [100, 300, 500], 'random_state': [rng_seed]}],
+        [RandomForestClassifier, {'max_features': [None, 'sqrt', 'log2'], 'n_estimators': [100, 300, 500], 'max_depth': [5, 10, None],'random_state': [rng_seed]}],
         [GradientBoostingClassifier, {'max_features': [None, 'sqrt', 'log2'], 'max_depth': [3, 5, 7], 'learning_rate': [0.1, 0.2, 0.3], 'n_estimators': [100, 300, 500], 'random_state': [rng_seed]}]
     ]
 
