@@ -2,7 +2,7 @@ import json
 import os
 import pandas as pd
 import numpy as np
-from sklearn.metrics import matthews_corrcoef
+from sklearn.metrics import matthews_corrcoef, make_scorer, confusion_matrix
 
 
 class NpEncoder(json.JSONEncoder):
@@ -21,7 +21,7 @@ def get_store_name(experiment, results_folder):
     return os.path.join(results_folder, f'{experiment}.json')
 
 
-def confusion_matrix(preds, y, normalize=True):
+def confusion_matrix_custom(preds, y, normalize=True):
     confusion_matrix = pd.crosstab(
         preds, y, margins=True, margins_name='total', normalize=normalize)
     confusion_matrix.columns = pd.Index(
@@ -31,9 +31,9 @@ def confusion_matrix(preds, y, normalize=True):
     return confusion_matrix.round(4)
 
 
-def df_description(df_path='../data', exp_path='../results/sampling'):
+def df_description(df_path='data'):
     
-    exp_data = sorted([i.replace('.json', '') for i in os.listdir(exp_path) if i != '.gitkeep'])
+    exp_data = sorted([i.replace('.parquet', '') for i in os.listdir(df_path) if i != '.gitkeep'])
     
     dfs = pd.DataFrame(columns=['instances', 'n_features', 'class_prop'], index=exp_data, data = [])
 
@@ -50,41 +50,33 @@ def df_description(df_path='../data', exp_path='../results/sampling'):
     return dfs
 
 
-def summary_relative_error(path='../results/instance_selection'):
-    exp_by_df = 4 * 3
-    exps = sorted([exp[:-5] for exp in os.listdir(path)])
-    summary = pd.DataFrame(columns = ['dataset', 'model', 'sampling method', 'performance gap', 'sample', 'threshold'], index = range(len(exps) * exp_by_df))
-    i = 0
-    for exp in exps:
-        
-        with open(f'{path}/{exp}.json', 'r') as fin:
-            exp_summary = json.load(fin)
-        
-        for sampling_method in [['test_score_kdn', 'props_kdn'], ['test_score_dynamic_kdn', 'props_dynamic_kdn'], ['test_score_dynamic_kdn_full', 'props_dynamic_kdn_full']]:
-            for model in ['SVC', 'KNeighborsClassifier', 'RandomForestClassifier', 'GradientBoostingClassifier']:
-                test_score = exp_summary[model]['test_score']
-
-                best_index = np.nanargmax(np.array(exp_summary[model][sampling_method[0]], dtype=np.float))
-                best_index_noNone = np.argmax(list(filter(None,exp_summary[model][sampling_method[0]])))
-                relative_error = test_score-exp_summary[model][sampling_method[0]][best_index]
-                summary.loc[i, 'sample'] = exp_summary[model][sampling_method[1]][best_index_noNone]
-                summary.loc[i, 'performance gap'] = relative_error
-                summary.loc[i, 'sampling method'] = sampling_method[0]
-                summary.loc[i, 'model'] = model
-                summary.loc[i, 'dataset'] = exp
-                if sampling_method[0] == 'test_score_kdn':
-                    summary.loc[i, 'threshold'] = [0.3, 0.5, 0.7, 0.9][best_index]
-                else: 
-                    summary.loc[i, 'threshold'] = [round(i*0.01, 2) for i in range(5, 100, 5)][best_index]
-                
-                i += 1
-        
-    return summary[~summary['performance gap'].isnull()]
-
-    
 def scaled_mcc(y_true, y_pred):
     matthews_corrcoef_scaled = (matthews_corrcoef(y_true, y_pred) + 1)/2
     return matthews_corrcoef_scaled
+
+
+def gps_score(y_true, y_pred):
+    tn, fp, fn, tp = confusion_matrix(y_true, y_pred).ravel()
+    
+    # Evitar división por cero usando una pequeña constante en el denominador
+    eps = 1e-10
+
+    recall = tp / (tp + fn + eps)
+    specificity = tn / (tn + fp + eps)
+    ppv = tp / (tp + fp + eps)
+    npv = tn / (tn + fn + eps)
+
+    gps_num = 4 * ppv * recall * specificity * npv
+    gps_denom = (ppv * recall * npv) + (ppv * recall * specificity) + (npv * specificity * ppv) + (npv * specificity * recall)
+
+    gps = gps_num / (gps_denom + eps)
+    return gps
+
+
+def named_scorer(score_func, name, greater_is_better=True, **kwargs):
+    scorer = make_scorer(score_func, greater_is_better=greater_is_better, **kwargs)
+    scorer.__name__ = name
+    return scorer
 
 
 def statistical_summary(df, column):
@@ -147,14 +139,14 @@ def k_sensitivity_df():
     'w8a'
     ]:
         
-        with open(f'../results/sensitivity/{experiment}.json', 'r') as fin:
+        with open(f'results/sensitivity/{experiment}.json', 'r') as fin:
             exp = json.load(fin)
             
-        with open(f'../results/errors/{experiment}.json', 'r') as fin:
+        with open(f'results/performance/{experiment}.json', 'r') as fin:
             error = json.load(fin)
         
         for j in range(1, 8):
-            for mc in ['kdn', 'dynamic_kdn', 'dynamic_kdn_full_zone']:
+            for mc in ['kdn', 'dynamic_kdn']:
                 df.loc[i, 'score'] = error[experiment]['test']['score']
                 df.loc[i, 'recall'] = error[experiment]['test']['tp']/error[experiment]['test']['positives']
                 df.loc[i, 'dataset'] = experiment
@@ -170,9 +162,6 @@ def k_sensitivity_df():
     df['global complexity score'] = 1 - df['global complexity']
     df['higher complexity score'] = 1 - df['higher complexity']
     df['lower complexity score'] = 1 - df['lower complexity']
-    df['global absolute recall difference'] = df['recall'] - (1 - df['global complexity'])
-    df['higher absolute recall difference'] = df['recall'] - (1 - df['higher complexity'])
-    df['lower absolute recall difference'] = df['recall'] - (1 - df['lower complexity'])
     
     for col in ['global complexity', 'higher complexity',
        'lower complexity', 'score',
