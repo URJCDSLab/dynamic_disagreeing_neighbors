@@ -1,0 +1,60 @@
+{
+   "kr_vs_kp": {
+      "all_models": [
+         {
+            "method": "SVC",
+            "params": {
+               "C": 100,
+               "gamma": 0.01,
+               "kernel": "rbf",
+               "random_state": 1234
+            },
+            "cv_score": 0.9743525507248171,
+            "cv_score_sd": 0.00955541642465429
+         },
+         {
+            "method": "KNeighborsClassifier",
+            "params": {
+               "n_jobs": -1,
+               "n_neighbors": 11
+            },
+            "cv_score": 0.7475385108445012,
+            "cv_score_sd": 0.04832402317253204
+         },
+         {
+            "method": "RandomForestClassifier",
+            "params": {
+               "max_depth": null,
+               "max_features": null,
+               "n_estimators": 300,
+               "random_state": 1234
+            },
+            "cv_score": 0.9792712659537012,
+            "cv_score_sd": 0.015086436202289345
+         },
+         {
+            "method": "GradientBoostingClassifier",
+            "params": {
+               "learning_rate": 0.2,
+               "max_depth": 5,
+               "max_features": null,
+               "n_estimators": 100,
+               "random_state": 1234
+            },
+            "cv_score": 0.9785427182278916,
+            "cv_score_sd": 0.015272933405936112
+         }
+      ],
+      "best_method": {
+         "method": "RandomForestClassifier",
+         "params": {
+            "max_depth": null,
+            "max_features": null,
+            "n_estimators": 300,
+            "random_state": 1234
+         },
+         "cv_score": 0.9792712659537012,
+         "cv_score_sd": 0.015086436202289345
+      }
+   }
+}

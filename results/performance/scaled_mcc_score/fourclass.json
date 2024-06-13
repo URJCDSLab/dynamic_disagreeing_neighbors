@@ -1,0 +1,60 @@
+{
+   "fourclass": {
+      "all_models": [
+         {
+            "method": "SVC",
+            "params": {
+               "C": 1,
+               "gamma": 10,
+               "kernel": "rbf",
+               "random_state": 1234
+            },
+            "cv_score": 1.0,
+            "cv_score_sd": 0.0
+         },
+         {
+            "method": "KNeighborsClassifier",
+            "params": {
+               "n_jobs": -1,
+               "n_neighbors": 1
+            },
+            "cv_score": 1.0,
+            "cv_score_sd": 0.0
+         },
+         {
+            "method": "RandomForestClassifier",
+            "params": {
+               "max_depth": 10,
+               "max_features": "sqrt",
+               "n_estimators": 100,
+               "random_state": 1234
+            },
+            "cv_score": 0.9962675490405999,
+            "cv_score_sd": 0.004948719034532577
+         },
+         {
+            "method": "GradientBoostingClassifier",
+            "params": {
+               "learning_rate": 0.1,
+               "max_depth": 5,
+               "max_features": "sqrt",
+               "n_estimators": 300,
+               "random_state": 1234
+            },
+            "cv_score": 0.9950100052248498,
+            "cv_score_sd": 0.004629043598163995
+         }
+      ],
+      "best_method": {
+         "method": "SVC",
+         "params": {
+            "C": 1,
+            "gamma": 10,
+            "kernel": "rbf",
+            "random_state": 1234
+         },
+         "cv_score": 1.0,
+         "cv_score_sd": 0.0
+      }
+   }
+}

@@ -1,0 +1,60 @@
+{
+   "breastcancer": {
+      "all_models": [
+         {
+            "method": "SVC",
+            "params": {
+               "C": 10,
+               "gamma": 0.01,
+               "kernel": "rbf",
+               "random_state": 1234
+            },
+            "cv_score": 0.9777237275213612,
+            "cv_score_sd": 0.007365457287443159
+         },
+         {
+            "method": "KNeighborsClassifier",
+            "params": {
+               "n_jobs": -1,
+               "n_neighbors": 9
+            },
+            "cv_score": 0.9665023125421165,
+            "cv_score_sd": 0.017148184745384643
+         },
+         {
+            "method": "RandomForestClassifier",
+            "params": {
+               "max_depth": 10,
+               "max_features": "sqrt",
+               "n_estimators": 100,
+               "random_state": 1234
+            },
+            "cv_score": 0.9645892107400247,
+            "cv_score_sd": 0.013712260554250792
+         },
+         {
+            "method": "GradientBoostingClassifier",
+            "params": {
+               "learning_rate": 0.3,
+               "max_depth": 3,
+               "max_features": "log2",
+               "n_estimators": 300,
+               "random_state": 1234
+            },
+            "cv_score": 0.9738318935659882,
+            "cv_score_sd": 0.015934876199507883
+         }
+      ],
+      "best_method": {
+         "method": "SVC",
+         "params": {
+            "C": 10,
+            "gamma": 0.01,
+            "kernel": "rbf",
+            "random_state": 1234
+         },
+         "cv_score": 0.9777237275213612,
+         "cv_score_sd": 0.007365457287443159
+      }
+   }
+}
