@@ -5,16 +5,16 @@ import json
 warnings.filterwarnings('ignore')
 
 from sklearn.model_selection import GridSearchCV, train_test_split
-from sklearn.metrics import f1_score
+from sklearn.metrics import f1_score, make_scorer
 from sklearn.preprocessing import StandardScaler
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.svm import SVC
 from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
 
-from src.utils import get_store_name, NpEncoder
+from src.utils import named_scorer, get_store_name, NpEncoder
 
 for experiment in [
-    'a9a', 
+    # 'a9a', 
     'appendicitis', 
     'australian', 
     'backache', 
@@ -54,7 +54,7 @@ for experiment in [
 ]:
     print(f'Experiment: {experiment}\n')
     
-    score = f1_score
+    score = named_scorer(f1_score, 'f1_score', greater_is_better=True)
 
     results_folder = f'results/performance/{score.__name__}'
     os.makedirs(results_folder, exist_ok=True)
