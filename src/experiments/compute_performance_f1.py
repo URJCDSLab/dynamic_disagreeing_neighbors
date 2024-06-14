@@ -14,7 +14,7 @@ from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
 from src.utils import named_scorer, get_store_name, NpEncoder
 
 for experiment in [
-    # 'a9a', 
+    'a9a', 
     'appendicitis', 
     'australian', 
     'backache', 
