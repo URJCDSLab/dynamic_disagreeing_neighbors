@@ -5,49 +5,50 @@ import warnings
 warnings.filterwarnings('ignore')
 
 from sklearn.model_selection import StratifiedKFold
+from sklearn.preprocessing import StandardScaler
 
 from src.utils import get_store_name, NpEncoder
 from src.model.instance_hardness import *
 from src.model.ddn import *
 
 for experiment in [
-'a9a',
+# 'a9a',
 'appendicitis',
-'australian',
-'backache',
-'banknote',
-'breastcancer',
-'bupa',
-'cleve',
-'cod-rna',
-'colon-cancer',
-'diabetes',
-'flare',
-'fourclass',
-'german_numer',
-'haberman',
-'heart',
-'housevotes84',
-'ilpd',
-'ionosphere',
-'kr_vs_kp',
-'liver-disorders',
-'mammographic',
-'mushroom',
-'r2',
-'sonar',
-'splice',
-'svmguide1',
-'svmguide3',
-'transfusion',
-'w1a',
-'w2a',
-'w3a',
-'w4a',
-'w5a',
-'w6a',
-'w7a',
-'w8a'
+# 'australian',
+# 'backache',
+# 'banknote',
+# 'breastcancer',
+# 'bupa',
+# 'cleve',
+# 'cod-rna',
+# 'colon-cancer',
+# 'diabetes',
+# 'flare',
+# 'fourclass',
+# 'german_numer',
+# 'haberman',
+# 'heart',
+# 'housevotes84',
+# 'ilpd',
+# 'ionosphere',
+# 'kr_vs_kp',
+# 'liver-disorders',
+# 'mammographic',
+# 'mushroom',
+# 'r2',
+# 'sonar',
+# 'splice',
+# 'svmguide1',
+# 'svmguide3',
+# 'transfusion',
+# 'w1a',
+# 'w2a',
+# 'w3a',
+# 'w4a',
+# 'w5a',
+# 'w6a',
+# 'w7a',
+# 'w8a'
 ]:
     print(f'Experiment: {experiment}\n')
 
@@ -56,6 +57,9 @@ for experiment in [
     os.makedirs(results_folder, exist_ok=True)
 
     data = pd.read_parquet(f'data/preprocessed/{experiment}.parquet')
+
+    X = data.drop(columns=['y']).values
+    y = data.y.values
 
     max_k = 9
 

@@ -5,7 +5,6 @@ import json
 warnings.filterwarnings('ignore')
 
 from sklearn.model_selection import GridSearchCV, train_test_split
-from sklearn.preprocessing import StandardScaler
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.svm import SVC
 from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
@@ -60,15 +59,11 @@ for experiment in [
 
     data = pd.read_parquet(f'data/{experiment}.parquet')
 
-    # Preprocessing
-    scaler = StandardScaler()
-    X = scaler.fit_transform(data.drop(columns=['y']))
+    data = pd.read_parquet(f'data/preprocessed/{experiment}.parquet')
+
+    X = data.drop(columns=['y']).values
     y = data.y.values
 
-    y[y == -1] = 0
-    if y.sum() > len(y) - y.sum():
-        y = abs(y - 1)
-    y = y.astype(int)
     rng_seed = 1234
 
     methods_mapping = {

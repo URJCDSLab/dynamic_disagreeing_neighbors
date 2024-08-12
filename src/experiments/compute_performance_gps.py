@@ -5,7 +5,6 @@ import json
 warnings.filterwarnings('ignore')
 
 from sklearn.model_selection import GridSearchCV, train_test_split
-from sklearn.preprocessing import StandardScaler
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.svm import SVC
 from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
@@ -58,23 +57,10 @@ for experiment in [
     results_folder = f'results/performance/{score.__name__}'
     os.makedirs(results_folder, exist_ok=True)
 
-    data = pd.read_parquet(f'data/{experiment}.parquet')
+    data = pd.read_parquet(f'data/preprocessed/{experiment}.parquet')
 
-    # Preprocessing
-    scaler = StandardScaler()
-    X = scaler.fit_transform(data.drop(columns=['y']))
+    X = data.drop(columns=['y']).values
     y = data.y.values
-
-    # Replace all instances of -1 in y with 0 to standardize the binary class labels to 0 and 1.
-    y[y == -1] = 0
-
-    # If the number of 1s in y exceeds the number of 0s, invert the class labels.
-    # This ensures that 1 represents the minority class.
-    if y.sum() > len(y) - y.sum():
-        y = abs(y - 1)
-
-    # Convert y to integers to ensure the class labels are stored as integers.
-    y = y.astype(int)
 
     rng_seed = 1234
 
