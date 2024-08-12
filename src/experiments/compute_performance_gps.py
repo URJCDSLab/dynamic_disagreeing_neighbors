@@ -65,10 +65,17 @@ for experiment in [
     X = scaler.fit_transform(data.drop(columns=['y']))
     y = data.y.values
 
+    # Replace all instances of -1 in y with 0 to standardize the binary class labels to 0 and 1.
     y[y == -1] = 0
+
+    # If the number of 1s in y exceeds the number of 0s, invert the class labels.
+    # This ensures that 1 represents the minority class.
     if y.sum() > len(y) - y.sum():
         y = abs(y - 1)
+
+    # Convert y to integers to ensure the class labels are stored as integers.
     y = y.astype(int)
+
     rng_seed = 1234
 
     methods_mapping = {
@@ -86,7 +93,7 @@ for experiment in [
     ]
 
     try:
-        with open(f'results/errors/{experiment}.json', 'r') as fin:
+        with open(f'results/performance/{experiment}.json', 'r') as fin:
             exp_info = json.load(fin)
     except:
         exp_info = {experiment: {}}
