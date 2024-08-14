@@ -12,43 +12,43 @@ from src.model.instance_hardness import *
 from src.model.ddn import *
 
 for experiment in [
-# 'a9a',
+'a9a',
 'appendicitis',
-# 'australian',
-# 'backache',
-# 'banknote',
-# 'breastcancer',
-# 'bupa',
-# 'cleve',
-# 'cod-rna',
-# 'colon-cancer',
-# 'diabetes',
-# 'flare',
-# 'fourclass',
-# 'german_numer',
-# 'haberman',
-# 'heart',
-# 'housevotes84',
-# 'ilpd',
-# 'ionosphere',
-# 'kr_vs_kp',
-# 'liver-disorders',
-# 'mammographic',
-# 'mushroom',
-# 'r2',
-# 'sonar',
-# 'splice',
-# 'svmguide1',
-# 'svmguide3',
-# 'transfusion',
-# 'w1a',
-# 'w2a',
-# 'w3a',
-# 'w4a',
-# 'w5a',
-# 'w6a',
-# 'w7a',
-# 'w8a'
+'australian',
+'backache',
+'banknote',
+'breastcancer',
+'bupa',
+'cleve',
+'cod-rna',
+'colon-cancer',
+'diabetes',
+'flare',
+'fourclass',
+'german_numer',
+'haberman',
+'heart',
+'housevotes84',
+'ilpd',
+'ionosphere',
+'kr_vs_kp',
+'liver-disorders',
+'mammographic',
+'mushroom',
+'r2',
+'sonar',
+'splice',
+'svmguide1',
+'svmguide3',
+'transfusion',
+'w1a',
+'w2a',
+'w3a',
+'w4a',
+'w5a',
+'w6a',
+'w7a',
+'w8a'
 ]:
     print(f'Experiment: {experiment}\n')
 
@@ -61,7 +61,7 @@ for experiment in [
     X = data.drop(columns=['y']).values
     y = data.y.values
 
-    max_k = 9
+    max_k = 8
 
     skf = StratifiedKFold(n_splits=5)
     
@@ -69,9 +69,9 @@ for experiment in [
     exp_info = {experiment: {k: {'folds': {'kdn': {'global': [], 'class 0': [], 'class 1': []},
                                            'ddn': {'global': [], 'class 0': [], 'class 1': []}},
                                  'mean_folds': {},  # Para almacenar la media de cada fold
-                                 'global': {}} for k in range(1, 8)}}
+                                 'global': {}} for k in range(1, max_k)}}
         
-    for k in range(1, 8):
+    for k in range(1, max_k):
         print(k)
         for i, (train_index, test_index) in enumerate(skf.split(X, y)):
             print('Fold:', i)
