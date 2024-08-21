@@ -11,7 +11,7 @@ from src.utils import get_store_name, NpEncoder
 from src.model.instance_hardness import *
 from src.model.ddn import *
 
-def process_experiments(max_k = 10, evaluate=True):
+def process_experiments(max_k = 11, evaluate=True):
     for experiment in [
     'a9a',
     'appendicitis',
@@ -74,7 +74,7 @@ def process_experiments(max_k = 10, evaluate=True):
         skf = StratifiedKFold(n_splits=5)
 
         # Process each value of k
-        for k in range(1, max_k+1):
+        for k in range(1, max_k):
             if evaluate and str(k) in exp_info.get(experiment, {}):
                 print(f"Skipping k={k} for experiment {experiment}, already processed.")
                 continue
