@@ -74,3 +74,43 @@ def distribution_plot(df, title='Performance gap'):
     plt.show()
     
     
+def plot_individual_complexity_differences(df):
+    # Plot for dataset_complexity_difference
+    plt.figure(figsize=(12, 6))
+    sns.boxplot(x='method', y='dataset_complexity_difference', data=df)
+    plt.title('Differences in Dataset Complexity (global - mean_folds) by Method')
+    plt.xlabel('Method')
+    plt.ylabel('Dataset Complexity Difference')
+    plt.show()
+
+    # Plot for majority_class_complexity_difference
+    plt.figure(figsize=(12, 6))
+    sns.boxplot(x='method', y='majority_class_complexity_difference', data=df)
+    plt.title('Differences in Majority Class Complexity (global - mean_folds) by Method')
+    plt.xlabel('Method')
+    plt.ylabel('Majority Class Complexity Difference')
+    plt.show()
+
+    # Plot for minority_class_complexity_difference
+    plt.figure(figsize=(12, 6))
+    sns.boxplot(x='method', y='minority_class_complexity_difference', data=df)
+    plt.title('Differences in Minority Class Complexity (global - mean_folds) by Method')
+    plt.xlabel('Method')
+    plt.ylabel('Minority Class Complexity Difference')
+    plt.show()
+
+    # Plot for most_complex_value_difference
+    plt.figure(figsize=(12, 6))
+    sns.boxplot(x='method', y='most_complex_value_difference', data=df)
+    plt.title('Differences in Most Complex Value (global - mean_folds) by Method')
+    plt.xlabel('Method')
+    plt.ylabel('Most Complex Value Difference')
+    plt.show()
+
+    # Plot for least_complex_value_difference
+    plt.figure(figsize=(12, 6))
+    sns.boxplot(x='method', y='least_complex_value_difference', data=df)
+    plt.title('Differences in Least Complex Value (global - mean_folds) by Method')
+    plt.xlabel('Method')
+    plt.ylabel('Least Complex Value Difference')
+    plt.show()

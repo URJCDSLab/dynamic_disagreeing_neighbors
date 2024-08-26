@@ -1,0 +1,153 @@
+
+import pandas as pd
+import json
+import os
+
+
+def df_description(df_path='data/preprocessed'):
+    
+    exp_data = sorted([i.replace('.parquet', '') for i in os.listdir(df_path) if i != '.gitkeep'])
+    
+    dfs = pd.DataFrame(columns=['instances', 'n_features', 'class_prop'], index=exp_data, data = [])
+
+    for exp in exp_data:
+        try:
+            X = pd.read_parquet(f'{df_path}/{exp}.parquet')
+            dfs.loc[exp, 'instances'] = X.shape[0]
+            dfs.loc[exp, 'n_features'] = X.shape[1]-1
+            dfs.loc[exp, 'class_prop'] = round(min(X['y'].value_counts()/X.shape[0]), 3)
+        except :
+            pass
+        
+    dfs.sort_index(inplace=True)
+    return dfs
+
+
+def performance_df():
+    data = []
+
+    metrics = ['f1_score', 'gps_score', 'scaled_mcc_score']
+    experiments = [
+        'a9a', 'appendicitis', 'australian', 'backache', 'banknote', 'breastcancer', 'bupa', 
+        'cleve', 'cod-rna', 'colon-cancer', 'diabetes', 'flare', 'fourclass', 'german_numer', 
+        'haberman', 'heart', 'housevotes84', 'ilpd', 'ionosphere', 'kr_vs_kp', 'liver-disorders', 
+        'mammographic', 'mushroom', 'r2', 'sonar', 'splice', 'svmguide1', 'svmguide3', 'transfusion', 
+        'w1a', 'w2a', 'w3a', 'w4a', 'w5a', 'w6a', 'w7a', 'w8a'
+    ]
+
+    for metric in metrics:
+        for experiment in experiments:
+            file_path = f'results/performance/{metric}/{experiment}.json'
+            
+            # Verificar si el archivo existe
+            if os.path.exists(file_path):
+                try:
+                    with open(file_path, 'r') as fin:
+                        performance = json.load(fin)
+                    # Agregar datos a la lista
+                    data.append({
+                        'dataset': experiment,
+                        'metric': metric,
+                        'score': performance[experiment]['best_method']['cv_score'],
+                        'score_sd': performance[experiment]['best_method']['cv_score_sd']
+                    })
+                except (json.JSONDecodeError, KeyError) as e:
+                    # Manejar el error en caso de un archivo JSON corrupto o formato inesperado
+                    print(f"Error leyendo o procesando el archivo {file_path}: {e}")
+
+    # Convertir la lista de diccionarios en un DataFrame
+    df = pd.DataFrame(data, columns=['dataset', 'metric', 'score', 'score_sd'])
+    
+    return df
+
+def extract_complexity_df():
+    data = []
+
+    datasets = [
+        'a9a', 'appendicitis', 'australian', 'backache', 'banknote', 'breastcancer', 'bupa', 
+        'cleve', 'cod-rna', 'colon-cancer', 'diabetes', 'flare', 'fourclass', 'german_numer', 
+        'haberman', 'heart', 'housevotes84', 'ilpd', 'ionosphere', 'kr_vs_kp', 'liver-disorders', 
+        'mammographic', 'mushroom', 'r2', 'sonar', 'splice', 'svmguide1', 'svmguide3', 'transfusion', 
+        'w1a', 'w2a', 'w3a', 'w4a', 'w5a', 'w6a', 'w7a', 'w8a'
+    ]
+
+    methods = ['kdn', 'ddn']
+    metrics = ['mean_folds', 'global']
+    classes = ['global', 'class 0', 'class 1']
+
+    for dataset in datasets:
+        file_path = f'results/complexity/{dataset}.json'
+        
+        # Check if the file exists
+        if os.path.exists(file_path):
+            try:
+                with open(file_path, 'r') as fin:
+                    performance = json.load(fin)
+                
+                for k in range(1, 12):  # k from 1 to 11
+                    k_str = str(k)
+                    if k_str in performance.get(dataset, {}):
+                        for metric in metrics:
+                            for method in methods:
+                                complexity_data = performance[dataset][k_str].get(metric, {}).get(method, {})
+                                
+                                # Get the complexity values
+                                majority_complexity = complexity_data.get('class 0', None)
+                                minority_complexity = complexity_data.get('class 1', None)
+                                
+                                # Append the data
+                                data.append({
+                                    'dataset': dataset,
+                                    'k': k,
+                                    'metric': metric,
+                                    'method': method,
+                                    'dataset_complexity': complexity_data.get('global', None),
+                                    'majority_class_complexity': majority_complexity,
+                                    'minority_class_complexity': minority_complexity
+                                })
+
+            except (json.JSONDecodeError, KeyError) as e:
+                # Handle the error in case of a corrupt JSON file or unexpected format
+                print(f"Error reading or processing file {file_path}: {e}")
+
+    # Convert the list of dictionaries to a DataFrame
+    df = pd.DataFrame(data, columns=[
+        'dataset', 'k', 'metric', 'method', 
+        'dataset_complexity', 'majority_class_complexity', 'minority_class_complexity'
+    ])
+
+    # Create columns for the max and min complexity between majority and minority classes
+    df['most_complex_value'] = df[['majority_class_complexity', 'minority_class_complexity']].max(axis=1)
+    df['least_complex_value'] = df[['majority_class_complexity', 'minority_class_complexity']].min(axis=1)
+    
+    return df
+
+
+def calculate_differences(df):
+    # Pivot the DataFrame to have `global` and `mean_folds` as columns for easy difference calculation
+    pivoted_df = df.pivot_table(
+        index=['dataset', 'k', 'method'],
+        columns='metric',
+        values=['dataset_complexity', 'majority_class_complexity', 'minority_class_complexity']
+    ).reset_index()
+
+    # Flatten multi-index columns correctly
+    pivoted_df.columns = ['_'.join(col).strip() if col[1] else col[0] for col in pivoted_df.columns.values]
+
+    # Calculate the differences for each complexity metric (global - mean_folds)
+    pivoted_df['dataset_complexity_difference'] = pivoted_df['dataset_complexity_global'] - pivoted_df['dataset_complexity_mean_folds']
+    pivoted_df['majority_class_complexity_difference'] = pivoted_df['majority_class_complexity_global'] - pivoted_df['majority_class_complexity_mean_folds']
+    pivoted_df['minority_class_complexity_difference'] = pivoted_df['minority_class_complexity_global'] - pivoted_df['minority_class_complexity_mean_folds']
+
+    # Calculate the most complex and least complex classes for global and mean_folds
+    pivoted_df['most_complex_class_global'] = pivoted_df[['majority_class_complexity_global', 'minority_class_complexity_global']].max(axis=1)
+    pivoted_df['least_complex_class_global'] = pivoted_df[['majority_class_complexity_global', 'minority_class_complexity_global']].min(axis=1)
+
+    pivoted_df['most_complex_class_mean_folds'] = pivoted_df[['majority_class_complexity_mean_folds', 'minority_class_complexity_mean_folds']].max(axis=1)
+    pivoted_df['least_complex_class_mean_folds'] = pivoted_df[['majority_class_complexity_mean_folds', 'minority_class_complexity_mean_folds']].min(axis=1)
+
+    # Calculate the differences for the most and least complex classes
+    pivoted_df['most_complex_class_difference'] = pivoted_df['most_complex_class_global'] - pivoted_df['most_complex_class_mean_folds']
+    pivoted_df['least_complex_class_difference'] = pivoted_df['least_complex_class_global'] - pivoted_df['least_complex_class_mean_folds']
+
+    return pivoted_df
