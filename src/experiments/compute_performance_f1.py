@@ -58,8 +58,6 @@ for experiment in [
     results_folder = f'results/performance/{score.__name__}'
     os.makedirs(results_folder, exist_ok=True)
 
-    data = pd.read_parquet(f'data/{experiment}.parquet')
-
     data = pd.read_parquet(f'data/preprocessed/{experiment}.parquet')
 
     X = data.drop(columns=['y']).values
