@@ -50,7 +50,35 @@ for experiment in [
     'w5a', 
     'w6a', 
     'w7a', 
-    'w8a'
+    'w8a',
+    'yeast1',
+ 'ecoli-0-1-4-7_vs_2-3-5-6',
+ 'yeast3',
+ 'analcatdata_lawsuit',
+ 'vehicle3',
+ 'spect',
+ 'yeast-0-2-5-7-9_vs_3-6-8',
+ 'page-blocks-1-3_vs_4',
+ 'ecoli-0-1-4-6_vs_5',
+ 'ecoli3',
+ 'ecoli4',
+ 'vehicle1',
+ 'page-blocks0',
+ 'vehicle0',
+ 'yeast6',
+ 'glass6',
+ 'yeast4',
+ 'glass2',
+ 'yeast5',
+ 'glass4',
+ 'ecoli1',
+ 'new-thyroid1',
+ 'ecoli2',
+ 'glass0',
+ 'dermatology-6',
+ 'glass1',
+ 'newthyroid2',
+ 'vehicle2'
 ]:
     print(f'Experiment: {experiment}\n') # Print the current experiment being processed
     
@@ -88,7 +116,8 @@ for experiment in [
 
     try:
         # Try to load existing results for the current experiment (if they exist)
-        with open(f'results/errors/{experiment}.json', 'r') as fin:
+        file_path = os.path.join(results_folder, f'{experiment}.json')
+        with open(file_path, 'r') as fin:
             exp_info = json.load(fin)
     except:
         # If no existing results, initialize empty variables for tracking the best model

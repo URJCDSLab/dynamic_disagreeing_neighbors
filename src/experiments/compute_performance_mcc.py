@@ -79,7 +79,8 @@ for experiment in [
     ]
 
     try:
-        with open(f'results/errors/{experiment}.json', 'r') as fin:
+        file_path = os.path.join(results_folder, f'{experiment}.json')
+        with open(file_path, 'r') as fin:
             exp_info = json.load(fin)
     except:
         exp_info = {experiment: {}}
