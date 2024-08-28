@@ -99,18 +99,18 @@ def plot_individual_complexity_differences(df):
     plt.ylabel('Minority Class Complexity Difference')
     plt.show()
 
-    # Plot for most_complex_value_difference
+    # Plot for most_complex_class_difference
     plt.figure(figsize=(12, 6))
-    sns.boxplot(x='method', y='most_complex_value_difference', data=df)
-    plt.title('Differences in Most Complex Value (global - mean_folds) by Method')
+    sns.boxplot(x='method', y='most_complex_class_difference', data=df)
+    plt.title('Differences in Most Complex Class (global - mean_folds) by Method')
     plt.xlabel('Method')
-    plt.ylabel('Most Complex Value Difference')
+    plt.ylabel('Most Complex Class Difference')
     plt.show()
 
-    # Plot for least_complex_value_difference
+    # Plot for least_complex_class_difference
     plt.figure(figsize=(12, 6))
-    sns.boxplot(x='method', y='least_complex_value_difference', data=df)
-    plt.title('Differences in Least Complex Value (global - mean_folds) by Method')
+    sns.boxplot(x='method', y='least_complex_class_difference', data=df)
+    plt.title('Differences in Least Complex Class (global - mean_folds) by Method')
     plt.xlabel('Method')
-    plt.ylabel('Least Complex Value Difference')
+    plt.ylabel('Least Complex Class Difference')
     plt.show()

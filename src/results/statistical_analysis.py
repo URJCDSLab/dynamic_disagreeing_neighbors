@@ -3,29 +3,14 @@ import pandas as pd
 from scipy.stats import ttest_rel, spearmanr
 
 
-def statistical_summary(df, column):
-    measures = ['test_score_kdn', 'test_score_dynamic_kdn', 'test_score_dynamic_kdn_full']
-    
-    data = pd.DataFrame(columns = ['mean', 'std', 'min', '5%', '10%', '15%', '20%', '25%', '30%',
-       '35%', '40%', '45%', '50%', '55%', '60%', '65%', '70%', '75%', '80%',
-       '85%', '90%', '95%', 'max'], index = measures)
-    
-    for measure in measures:
-        data.loc[measure, :] = df[df['sampling method'] == measure][column].astype(float).describe(percentiles=[round(i*0.01, 2) for i in range(5, 100, 5)])[['mean', 'std', 'min', '5%', '10%', '15%', '20%', '25%', '30%',
-       '35%', '40%', '45%', '50%', '55%', '60%', '65%', '70%', '75%', '80%',
-       '85%', '90%', '95%', 'max']]
-    
-    return data.T
-
-
 def perform_paired_t_tests(df):
     # Define the columns to test
     columns_to_test = [
         ('dataset_complexity_global', 'dataset_complexity_mean_folds'),
         ('majority_class_complexity_global', 'majority_class_complexity_mean_folds'),
         ('minority_class_complexity_global', 'minority_class_complexity_mean_folds'),
-        ('most_complex_value_global', 'most_complex_value_mean_folds'),
-        ('least_complex_value_global', 'least_complex_value_mean_folds')
+        ('most_complex_class_global', 'most_complex_class_mean_folds'),
+        ('least_complex_class_global', 'least_complex_class_mean_folds')
     ]
 
     # Function to interpret the significance level
