@@ -1,0 +1,58 @@
+{
+   "ecoli-0-1-4-7_vs_2-3-5-6": {
+      "all_models": [
+         {
+            "method": "SVC",
+            "params": {
+               "C": 100,
+               "gamma": 0.01,
+               "kernel": "rbf",
+               "random_state": 1234
+            },
+            "cv_score": 0.818224911583323,
+            "cv_score_sd": 0.10792380693062914
+         },
+         {
+            "method": "KNeighborsClassifier",
+            "params": {
+               "n_jobs": -1,
+               "n_neighbors": 5
+            },
+            "cv_score": 0.8639050585565287,
+            "cv_score_sd": 0.09971664972973769
+         },
+         {
+            "method": "RandomForestClassifier",
+            "params": {
+               "max_depth": 5,
+               "max_features": null,
+               "n_estimators": 100,
+               "random_state": 1234
+            },
+            "cv_score": 0.7778150461945484,
+            "cv_score_sd": 0.13766806016776126
+         },
+         {
+            "method": "GradientBoostingClassifier",
+            "params": {
+               "learning_rate": 0.3,
+               "max_depth": 3,
+               "max_features": "sqrt",
+               "n_estimators": 300,
+               "random_state": 1234
+            },
+            "cv_score": 0.8064302805438318,
+            "cv_score_sd": 0.10876273217691526
+         }
+      ],
+      "best_method": {
+         "method": "KNeighborsClassifier",
+         "params": {
+            "n_jobs": -1,
+            "n_neighbors": 5
+         },
+         "cv_score": 0.8639050585565287,
+         "cv_score_sd": 0.09971664972973769
+      }
+   }
+}
