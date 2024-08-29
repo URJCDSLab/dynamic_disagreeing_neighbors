@@ -87,18 +87,18 @@ def perform_paired_tests(df, remove_outliers=False, return_outliers=False):
     outliers_list = []
 
     # Perform paired tests for each method and each set of columns
-    for method in df['method'].unique():
-        method_data = df[df['method'] == method]
-        print(f"\nResults for method: {method}")
+    for metric in df['metric'].unique():
+        metric_data = df[df['metric'] == metric]
+        print(f"\nResults for measure: {metric}")
 
         for col_global, col_mean_folds in columns_to_test:
-            data_global = method_data[col_global].copy()
-            data_mean_folds = method_data[col_mean_folds].copy()
+            data_global = metric_data[col_global].copy()
+            data_mean_folds = metric_data[col_mean_folds].copy()
 
             # Remove outliers if specified
             if remove_outliers:
-                data_global, outliers_global = remove_outliers_iqr(data_global, method_data)
-                data_mean_folds, outliers_mean_folds = remove_outliers_iqr(data_mean_folds, method_data)
+                data_global, outliers_global = remove_outliers_iqr(data_global, metric_data)
+                data_mean_folds, outliers_mean_folds = remove_outliers_iqr(data_mean_folds, metric_data)
 
                 # Collect original outliers if requested
                 if return_outliers:
@@ -161,22 +161,125 @@ def calculate_spearman_correlations(df_performance, df_complexity):
                         corr_dataset_complexity, _ = spearmanr(1-filtered_data['dataset_complexity'], filtered_data['score'])
                         corr_majority_class_complexity, _ = spearmanr(1-filtered_data['majority_class_complexity'], filtered_data['score'])
                         corr_minority_class_complexity, _ = spearmanr(1-filtered_data['minority_class_complexity'], filtered_data['score'])
-                        corr_most_complex_value, _ = spearmanr(1-filtered_data['most_complex_value'], filtered_data['score'])
-                        corr_least_complex_value, _ = spearmanr(1-filtered_data['least_complex_value'], filtered_data['score'])
+                        corr_most_complex_class, _ = spearmanr(1-filtered_data['most_complex_class'], filtered_data['score'])
+                        corr_least_complex_class, _ = spearmanr(1-filtered_data['least_complex_class'], filtered_data['score'])
 
                         correlations.append({
-                            'method': method,
+                            'method': method, # Specifies whether it's global or mean_folds
                             'k': k,
-                            'complexity_metric': metric,  # Specifies whether it's global or mean_folds
+                            'complexity_metric': metric,  
                             'performance_metric': performance_metric,  # Metric from df_performance (f1_score, etc.)
                             'corr_dataset_complexity': corr_dataset_complexity,
                             'corr_majority_class_complexity': corr_majority_class_complexity,
                             'corr_minority_class_complexity': corr_minority_class_complexity,
-                            'corr_most_complex_value': corr_most_complex_value,
-                            'corr_least_complex_value': corr_least_complex_value
+                            'corr_most_complex_class': corr_most_complex_class,
+                            'corr_least_complex_class': corr_least_complex_class
                         })
 
         # Convert the list of correlations to a DataFrame and store it with the performance metric as the key
         results[performance_metric] = pd.DataFrame(correlations)
 
     return results
+
+
+def summarize_correlations(df):
+    # Group by method, complexity metric, and performance metric to calculate summary statistics
+    summary = df.groupby(['method', 'complexity_metric']).agg(
+        mean_corr_dataset=('corr_dataset_complexity', 'mean'),
+        std_corr_dataset=('corr_dataset_complexity', 'std'),
+        mean_corr_majority=('corr_majority_class_complexity', 'mean'),
+        std_corr_majority=('corr_majority_class_complexity', 'std'),
+        mean_corr_minority=('corr_minority_class_complexity', 'mean'),
+        std_corr_minority=('corr_minority_class_complexity', 'std'),
+        mean_corr_most_complex=('corr_most_complex_class', 'mean'),
+        std_corr_most_complex=('corr_most_complex_class', 'std'),
+        mean_corr_least_complex=('corr_least_complex_class', 'mean'),
+        std_corr_least_complex=('corr_least_complex_class', 'std'),
+    ).reset_index()
+
+    return summary
+
+
+def calculate_statistical_differences(df, performance_metric, k=1):
+    """
+    Calculate the statistical differences between diff_score_minority_class_complexity and 
+    diff_score_most_complex_class for a specified k value, comparing each method (kdn and ddn) 
+    depending on the performance metric.
+
+    Parameters:
+    -----------
+    df : pandas.DataFrame
+        The DataFrame containing the performance and complexity data. 
+        Must include 'k', 'metric_x', 'metric_y', 'diff_score_minority_class_complexity',
+        and 'diff_score_most_complex_class' columns.
+
+    performance_metric : str
+        The performance metric to filter and analyze (e.g., 'accuracy_score').
+        
+    k : int, optional (default=1)
+        The value of k to filter and analyze.
+
+    Returns:
+    --------
+    pd.DataFrame
+        A DataFrame with the statistical results of the tests.
+    str
+        A textual explanation of the test results, indicating if there are significant differences or not.
+    """
+    # Filter data for the specified k value and the selected performance metric
+    df_filtered = df[(df['k'] == k) & (df['metric_x'] == performance_metric)]
+
+    # Initialize a list to store results
+    results = []
+    explanation = ""
+
+    # Loop over the methods 'kdn' and 'ddn'
+    for method in ['kdn', 'ddn']:
+        method_data = df_filtered[df_filtered['metric_y'] == method]
+
+        # Extract the differences
+        diff_minority = method_data['diff_score_minority_class_complexity']
+        diff_most_complex = method_data['diff_score_most_complex_class']
+
+        # Perform normality test (Shapiro-Wilk test)
+        stat, p_normality = shapiro(diff_minority - diff_most_complex)
+
+        # Choose the statistical test based on the normality of the data
+        if p_normality > 0.05:
+            # Use paired t-test if normal
+            test_stat, p_value = ttest_rel(diff_minority, diff_most_complex)
+            test_used = 'Paired t-test'
+        else:
+            # Use Wilcoxon signed-rank test if not normal
+            test_stat, p_value = wilcoxon(diff_minority, diff_most_complex)
+            test_used = 'Wilcoxon signed-rank test'
+
+        # Interpret the results
+        if p_value < 0.01:
+            interpretation = "There is a highly significant difference at the 99% confidence level (p < 0.01)."
+        elif p_value < 0.05:
+            interpretation = "There is a significant difference at the 95% confidence level (p < 0.05)."
+        elif p_value < 0.10:
+            interpretation = "There is a moderately significant difference at the 90% confidence level (p < 0.10)."
+        else:
+            interpretation = "There is no statistically significant difference between the two measures."
+
+        # Store the results
+        results.append({
+            'method': method,
+            'performance_metric': performance_metric,
+            'k': k,
+            'test_used': test_used,
+            'test_statistic': test_stat,
+            'p_value': p_value,
+            'normality_p_value': p_normality,
+            'normality_test': 'Shapiro-Wilk'
+        })
+
+        # Add interpretation to the explanation
+        explanation += (f"\nFor method {method} using {test_used}: {interpretation} "
+                        f"Test statistic: {test_stat:.3f}, p-value: {p_value:.3f}.")
+
+    # Convert results to DataFrame
+    results_df = pd.DataFrame(results)
+    return results_df, explanation

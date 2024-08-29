@@ -191,8 +191,8 @@ def extract_complexity_df():
         'vehicle2'
     ]
 
-    methods = ['kdn', 'ddn']
-    metrics = ['mean_folds', 'global']
+    metrics = ['kdn', 'ddn']
+    methods = ['mean_folds', 'global']
     classes = ['global', 'class 0', 'class 1']
 
     for dataset in datasets:
@@ -209,7 +209,7 @@ def extract_complexity_df():
                     if k_str in performance.get(dataset, {}):
                         for metric in metrics:
                             for method in methods:
-                                complexity_data = performance[dataset][k_str].get(metric, {}).get(method, {})
+                                complexity_data = performance[dataset][k_str].get(method, {}).get(metric, {})
                                 
                                 # Get the complexity values
                                 majority_complexity = complexity_data.get('class 0', None)
@@ -237,8 +237,8 @@ def extract_complexity_df():
     ])
 
     # Create columns for the max and min complexity between majority and minority classes
-    df['most_complex_value'] = df[['majority_class_complexity', 'minority_class_complexity']].max(axis=1)
-    df['least_complex_value'] = df[['majority_class_complexity', 'minority_class_complexity']].min(axis=1)
+    df['most_complex_class'] = df[['majority_class_complexity', 'minority_class_complexity']].max(axis=1)
+    df['least_complex_class'] = df[['majority_class_complexity', 'minority_class_complexity']].min(axis=1)
     
     return df
 
@@ -246,8 +246,8 @@ def extract_complexity_df():
 def calculate_differences(df):
     # Pivot the DataFrame to have `global` and `mean_folds` as columns for easy difference calculation
     pivoted_df = df.pivot_table(
-        index=['dataset', 'k', 'method'],
-        columns='metric',
+        index=['dataset', 'k', 'metric'],
+        columns='method',
         values=['dataset_complexity', 'majority_class_complexity', 'minority_class_complexity']
     ).reset_index()
 
@@ -271,3 +271,41 @@ def calculate_differences(df):
     pivoted_df['least_complex_class_difference'] = pivoted_df['least_complex_class_global'] - pivoted_df['least_complex_class_mean_folds']
 
     return pivoted_df
+
+
+def calculate_score_differences(df_performance, df_complexity):
+    """
+    Calculate the differences between the score and 1 - complexity for minority_class_complexity and most_complex_class.
+    Merges performance data with complexity data and computes the differences.
+
+    Parameters:
+    -----------
+    df_performance : pandas.DataFrame
+        The DataFrame containing the performance scores. Must include 'dataset' and 'score' columns.
+
+    df_complexity : pandas.DataFrame
+        The DataFrame containing the complexity data. Must include 'dataset', 'method', 'minority_class_complexity',
+        and 'most_complex_class'.
+
+    Returns:
+    --------
+    pd.DataFrame
+        A merged DataFrame with calculated differences between the score and 1 - complexity for the relevant columns.
+    """
+    # Filter to keep only the 'global' method complexities
+    df_complexity_filtered = df_complexity[df_complexity['method'] == 'global'].copy()
+
+    # Drop unnecessary columns
+    df_complexity_filtered.drop(
+        columns=['method', 'dataset_complexity', 'majority_class_complexity', 'least_complex_class'], 
+        inplace=True
+    )
+
+    # Merge the performance and complexity data
+    df_combined = pd.merge(df_performance, df_complexity_filtered, on='dataset', how='inner')
+
+    # Calculate the differences between the score and 1 - complexity
+    df_combined['diff_score_minority_class_complexity'] = df_combined['score'] - (1 - df_combined['minority_class_complexity'])
+    df_combined['diff_score_most_complex_class'] = df_combined['score'] - (1 - df_combined['most_complex_class'])
+
+    return df_combined
