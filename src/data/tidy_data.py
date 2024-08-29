@@ -309,3 +309,57 @@ def calculate_score_differences(df_performance, df_complexity):
     df_combined['diff_score_most_complex_class'] = df_combined['score'] - (1 - df_combined['most_complex_class'])
 
     return df_combined
+
+
+
+def extract_best_model_performance(results_dir='results/performance'):
+    """
+    Extracts the expected performance of the best model from JSON results for each experiment.
+
+    Parameters:
+    -----------
+    metrics : list of str
+        List of performance metrics directories to search (e.g., ['accuracy_score', 'f1_score', 'gps_score', 'scaled_mcc_score']).
+    
+    results_dir : str, optional (default='results/performance')
+        The base directory where the performance results are stored.
+
+    Returns:
+    --------
+    pd.DataFrame
+        A DataFrame containing the best model's expected performance for each experiment and metric.
+    """
+    # Initialize a list to store results
+    performance_data = []
+
+    # Define the list of metrics
+    metrics = ['accuracy_score', 'f1_score', 'gps_score', 'scaled_mcc_score']
+
+    # Iterate over each metric directory
+    for metric in metrics:
+        metric_dir = os.path.join(results_dir, metric)
+        # List all JSON files in the metric directory
+        for file in os.listdir(metric_dir):
+            if file.endswith('.json'):
+                experiment_name = file.replace('.json', '')
+                file_path = os.path.join(metric_dir, file)
+
+                # Load the JSON file
+                with open(file_path, 'r') as fin:
+                    data = json.load(fin)
+                
+                # Extract the best method information
+                best_method = data.get(experiment_name, {}).get('best_method', {})
+                if best_method:
+                    performance_data.append({
+                        'dataset': experiment_name,
+                        'metric': metric,
+                        'best_method': best_method.get('method'),
+                        'best_params': best_method.get('params'),
+                        'cv_score': best_method.get('cv_score'),
+                        'cv_score_sd': best_method.get('cv_score_sd')
+                    })
+
+    # Convert the list of dictionaries to a DataFrame
+    performance_df = pd.DataFrame(performance_data)
+    return performance_df
