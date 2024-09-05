@@ -22,16 +22,6 @@ def get_store_name(experiment, results_folder):
     return os.path.join(results_folder, f'{experiment}.json')
 
 
-def confusion_matrix_custom(preds, y, normalize=True):
-    confusion_matrix = pd.crosstab(
-        preds, y, margins=True, margins_name='total', normalize=normalize)
-    confusion_matrix.columns = pd.Index(
-        [0, 1, 'total'], dtype='object', name='real')
-    confusion_matrix.index = pd.Index(
-        [0, 1, 'total'], dtype='object', name='pred')
-    return confusion_matrix.round(4)
-
-
 def scaled_mcc(y_true, y_pred):
     matthews_corrcoef_scaled = (matthews_corrcoef(y_true, y_pred) + 1)/2
     return matthews_corrcoef_scaled
