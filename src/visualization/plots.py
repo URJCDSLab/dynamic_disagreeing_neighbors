@@ -208,3 +208,69 @@ def plot_score_differences(df, performance_metric):
 
     # Show the plot
     plt.show()
+    
+
+def plot_score_differences(df_score_differences, df_x_axis, k, diff='diff_score_most_complex_class', x_var='best_method'):
+    """
+    Plots score differences for a given k value using Seaborn.
+
+    Parameters:
+    -----------
+    df_score_differences : pd.DataFrame
+        DataFrame containing score differences.
+    df_x_axis : pd.DataFrame
+        DataFrame containing x-axis variable information.
+    k : int
+        k value for filtering.
+    diff : str, optional (default='diff_score_most_complex_class')
+        Column name for score differences.
+    x_var : str, optional (default='best_method')
+        Column name for x-axis variable.
+
+    Returns:
+    --------
+    None
+        The function returns None as it directly creates plots.
+    """
+
+    # Filter data for the specified k value
+    df_filtered = df_score_differences[df_score_differences['k'] == k]
+
+    # Merge with best method information
+    df_merged = df_filtered.merge(df_x_axis[['dataset', x_var]], on=['dataset'], how='left')
+
+    # Create violin plots for each unique metric
+    for metric in df_merged['metric_x'].unique():
+        g = sns.catplot(
+            data=df_merged[df_merged['metric_x'] == metric],
+            x=x_var,
+            y=diff,
+            hue="metric_y",
+            kind="violin",
+            inner="stick",
+            split=True,
+            palette="pastel",
+            legend_out=True  # Move legend outside the plot for better visibility
+        )
+        g.fig.suptitle(f"Score differences for metric: {metric}", y=1.02)  # Set title above the plot
+
+        # Get the legend and set its title and position
+        legend = g._legend
+        legend.set_title("Complexity Measure")
+        legend.set_bbox_to_anchor((1, 0.9))  # Adjust position to upper right corner
+        
+        # Customize the legend appearance
+        legend.get_frame().set_facecolor('white')  # Set background color to white
+        legend.get_frame().set_edgecolor('grey')  # Set border color to black
+        legend.get_frame().set_linewidth(1.2)      # Set border width
+        legend.get_frame().set_alpha(0.7)            # Make the legend background opaque
+        legend.set_frame_on(True)                  # Ensure that the frame is turned on
+        
+        # Add a horizontal line at y=0
+        plt.axhline(0, color='black', linestyle='--', linewidth=1)
+
+
+        # Rotate x-axis labels for readability
+        plt.xticks(rotation=45)
+        plt.tight_layout()
+        plt.show()
