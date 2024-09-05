@@ -210,18 +210,14 @@ def plot_score_differences(df, performance_metric):
     plt.show()
     
 
-def plot_score_differences(df_score_differences, df_x_axis, k, diff='diff_score_most_complex_class', x_var='best_method'):
+def plot_score_differences(df_merged, diff='diff_score_most_complex_class', x_var='best_method'):
     """
-    Plots score differences for a given k value using Seaborn.
+    Plots score differences using Seaborn.
 
     Parameters:
     -----------
-    df_score_differences : pd.DataFrame
-        DataFrame containing score differences.
-    df_x_axis : pd.DataFrame
-        DataFrame containing x-axis variable information.
-    k : int
-        k value for filtering.
+    df_merged : pd.DataFrame
+        Merged DataFrame containing all the necessary information for plotting.
     diff : str, optional (default='diff_score_most_complex_class')
         Column name for score differences.
     x_var : str, optional (default='best_method')
@@ -232,13 +228,7 @@ def plot_score_differences(df_score_differences, df_x_axis, k, diff='diff_score_
     None
         The function returns None as it directly creates plots.
     """
-
-    # Filter data for the specified k value
-    df_filtered = df_score_differences[df_score_differences['k'] == k]
-
-    # Merge with best method information
-    df_merged = df_filtered.merge(df_x_axis[['dataset', x_var]], on=['dataset'], how='left')
-
+    
     # Create violin plots for each unique metric
     for metric in df_merged['metric_x'].unique():
         g = sns.catplot(
@@ -261,14 +251,13 @@ def plot_score_differences(df_score_differences, df_x_axis, k, diff='diff_score_
         
         # Customize the legend appearance
         legend.get_frame().set_facecolor('white')  # Set background color to white
-        legend.get_frame().set_edgecolor('grey')  # Set border color to black
+        legend.get_frame().set_edgecolor('grey')   # Set border color to grey
         legend.get_frame().set_linewidth(1.2)      # Set border width
-        legend.get_frame().set_alpha(0.7)            # Make the legend background opaque
+        legend.get_frame().set_alpha(0.7)          # Make the legend background semi-transparent
         legend.set_frame_on(True)                  # Ensure that the frame is turned on
         
         # Add a horizontal line at y=0
         plt.axhline(0, color='black', linestyle='--', linewidth=1)
-
 
         # Rotate x-axis labels for readability
         plt.xticks(rotation=45)
