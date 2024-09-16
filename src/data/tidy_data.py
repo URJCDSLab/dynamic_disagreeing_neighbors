@@ -363,3 +363,72 @@ def extract_best_model_performance(results_dir='results/performance'):
     # Convert the list of dictionaries to a DataFrame
     performance_df = pd.DataFrame(performance_data)
     return performance_df
+
+
+def extract_all_models_performance(results_dir='results/performance'):
+    """
+    Extracts the performance of all models from JSON results for each experiment,
+    including a category for the best model.
+
+    Parameters:
+    -----------
+    results_dir : str, optional (default='results/performance')
+        The base directory where the performance results are stored.
+
+    Returns:
+    --------
+    pd.DataFrame
+        A DataFrame containing the performance of all models for each experiment and metric,
+        including a category for the best model.
+    """
+    # Inicializar una lista para almacenar los resultados
+    performance_data = []
+
+    # Definir la lista de métricas
+    metrics = ['accuracy_score', 'f1_score', 'gps_score', 'scaled_mcc_score']
+
+    # Iterar sobre cada directorio de métricas
+    for metric in metrics:
+        metric_dir = os.path.join(results_dir, metric)
+        # Listar todos los archivos JSON en el directorio de métricas
+        for file in os.listdir(metric_dir):
+            if file.endswith('.json'):
+                experiment_name = file.replace('.json', '')
+                file_path = os.path.join(metric_dir, file)
+
+                # Cargar el archivo JSON
+                with open(file_path, 'r') as fin:
+                    data = json.load(fin)
+
+                # Extraer todos los modelos y el mejor modelo
+                all_models = data.get(experiment_name, {}).get('all_models', [])
+                best_method_info = data.get(experiment_name, {}).get('best_method', {})
+                best_method_name = best_method_info.get('method')
+
+                # Añadir la información de cada modelo al listado de resultados
+                for model in all_models:
+                    performance_data.append({
+                        'dataset': experiment_name,
+                        'metric': metric,
+                        'method': model.get('method'),
+                        'params': model.get('params'),
+                        'cv_score': model.get('cv_score'),
+                        'cv_score_sd': model.get('cv_score_sd'),
+                        'is_best_method': model.get('method') == best_method_name
+                    })
+
+                # Añadir una fila para el mejor método, con el método categorizado como 'best_method'
+                if best_method_info:
+                    performance_data.append({
+                        'dataset': experiment_name,
+                        'metric': metric,
+                        'method': 'best_method',
+                        'params': best_method_info.get('params'),
+                        'cv_score': best_method_info.get('cv_score'),
+                        'cv_score_sd': best_method_info.get('cv_score_sd'),
+                        'is_best_method': True
+                    })
+
+    # Convertir la lista de diccionarios a un DataFrame
+    performance_df = pd.DataFrame(performance_data)
+    return performance_df

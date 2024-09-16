@@ -12,6 +12,7 @@ df_complexity = extract_complexity_df()
 df_differences = calculate_differences(df_complexity)
 df_score_differences = calculate_score_differences(df_performance, df_complexity)
 df_performance_results = extract_best_model_performance()
+df_performance_results_detailed = extract_all_models_performance()
 df_description = df_description()
 
 # Guardar los DataFrames en formato Parquet
@@ -20,6 +21,7 @@ df_complexity.to_parquet(os.path.join(output_dir, 'complexity_data.parquet'))
 df_differences.to_parquet(os.path.join(output_dir, 'differences_data.parquet'))
 df_score_differences.to_parquet(os.path.join(output_dir, 'score_differences_data.parquet'))
 df_performance_results.to_parquet(os.path.join(output_dir, 'performance_data.parquet'))
+df_performance_results_detailed.to_parquet(os.path.join(output_dir, 'performance_detailed_data.parquet'))
 df_description.to_parquet(os.path.join(output_dir, 'df_description_data.parquet'))
 
 

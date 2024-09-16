@@ -45,7 +45,7 @@ def plot_individual_complexity_differences(df):
     plt.show()
 
 
-def plot_line_correlations(df):
+def plot_line_correlations(df, score_metric):
     """
     Plot line graphs of correlations for each complexity metric by k, method, and complexity_metric.
     Highlights and annotates the maximum value for each series with arrows pointing at a 30-degree downward angle.
@@ -124,7 +124,7 @@ def plot_line_correlations(df):
             )
         
         # Set plot titles and labels
-        plt.title(f'Correlation of {col.replace("_", " ").title()} with Performance (scaled_mcc_score)')
+        plt.title(f'Correlation of {col.replace("_", " ").title()} with Performance ({score_metric})')
         plt.ylabel('Spearman Correlation')
         plt.xlabel('k')
         plt.legend(title='Metric (Global vs. Mean Folds)', loc='lower left')  # Legend always at the bottom left

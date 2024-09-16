@@ -158,11 +158,11 @@ def calculate_spearman_correlations(df_performance, df_complexity):
                     
                     if not filtered_data.empty:
                         # Calculate Spearman correlations for each complexity variable with the performance score
-                        corr_dataset_complexity, _ = spearmanr(1-filtered_data['dataset_complexity'], filtered_data['score'])
-                        corr_majority_class_complexity, _ = spearmanr(1-filtered_data['majority_class_complexity'], filtered_data['score'])
-                        corr_minority_class_complexity, _ = spearmanr(1-filtered_data['minority_class_complexity'], filtered_data['score'])
-                        corr_most_complex_class, _ = spearmanr(1-filtered_data['most_complex_class'], filtered_data['score'])
-                        corr_least_complex_class, _ = spearmanr(1-filtered_data['least_complex_class'], filtered_data['score'])
+                        corr_dataset_complexity, _ = spearmanr(1-filtered_data['dataset_complexity'], filtered_data['cv_score'])
+                        corr_majority_class_complexity, _ = spearmanr(1-filtered_data['majority_class_complexity'], filtered_data['cv_score'])
+                        corr_minority_class_complexity, _ = spearmanr(1-filtered_data['minority_class_complexity'], filtered_data['cv_score'])
+                        corr_most_complex_class, _ = spearmanr(1-filtered_data['most_complex_class'], filtered_data['cv_score'])
+                        corr_least_complex_class, _ = spearmanr(1-filtered_data['least_complex_class'], filtered_data['cv_score'])
 
                         correlations.append({
                             'method': method, # Specifies whether it's global or mean_folds
