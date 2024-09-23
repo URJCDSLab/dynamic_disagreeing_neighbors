@@ -1,7 +1,7 @@
-
 import pandas as pd
 import numpy as np
-from scipy.stats import ttest_rel, wilcoxon, shapiro, spearmanr
+from scipy.stats import ttest_rel, wilcoxon, shapiro, spearmanr, f_oneway, kruskal
+from statsmodels.stats.multicomp import pairwise_tukeyhsd
 
 
 def perform_paired_tests(df, remove_outliers=False, return_outliers=False):
@@ -283,3 +283,174 @@ def calculate_statistical_differences(df, performance_metric, k=1):
     # Convert results to DataFrame
     results_df = pd.DataFrame(results)
     return results_df, explanation
+
+def evaluate_differences(df, variable='diff_score_minority_class_complexity', factor1='class_prop_category', factor2='best_method'):
+    """
+    Evaluates if there are significant differences in the specified variable according to two factors.
+
+    Parameters:
+    -----------
+    df : pd.DataFrame
+        The input DataFrame containing the data.
+    variable : str, optional (default='diff_score_minority_class_complexity')
+        The name of the variable to analyze.
+    factor1 : str, optional (default='class_prop_category')
+        The first factor to consider in the analysis.
+    factor2 : str, optional (default='best_method')
+        The second factor to consider in the analysis.
+
+    Returns:
+    --------
+    dict
+        Dictionary with the results of the analysis for each combination of 'metric_x' and 'metric_y'.
+    """
+    results = {}
+
+    # Group data by 'metric_x' and 'metric_y'
+    grouped = df.groupby(['metric_x', 'metric_y'])
+    
+    for (metric_x, metric_y), group in grouped:
+        # Create groups for the combination of the two factors
+        group_data = group.groupby([factor1, factor2])[variable].apply(list)
+        
+        # Ensure that groups are lists and contain numeric values
+        filtered_groups = [list(filter(pd.notna, g)) for g in group_data if isinstance(g, list) and len(g) > 1]
+
+        # Check if there are enough groups for ANOVA/Kruskal-Wallis
+        if len(filtered_groups) > 1:
+            # Perform ANOVA or Kruskal-Wallis test
+            try:
+                anova_result = f_oneway(*filtered_groups)
+                if pd.isna(anova_result.pvalue):
+                    # If ANOVA result is NaN, use Kruskal-Wallis test
+                    kruskal_result = kruskal(*filtered_groups)
+                    results[(metric_x, metric_y)] = {'test': 'Kruskal-Wallis', 'p-value': kruskal_result.pvalue, 'statistic': kruskal_result.statistic}
+                else:
+                    results[(metric_x, metric_y)] = {'test': 'ANOVA', 'p-value': anova_result.pvalue, 'statistic': anova_result.statistic}
+            except Exception as e:
+                # Handle any errors and use Kruskal-Wallis as a fallback
+                kruskal_result = kruskal(*filtered_groups)
+                results[(metric_x, metric_y)] = {'test': 'Kruskal-Wallis', 'p-value': kruskal_result.pvalue, 'statistic': kruskal_result.statistic}
+        else:
+            results[(metric_x, metric_y)] = {'test': 'Insufficient groups', 'p-value': None, 'statistic': None}
+    
+    return results
+
+
+def generate_difference_report(results):
+    """
+    Generates a report explaining where significant differences were found based on ANOVA results.
+
+    Parameters:
+    -----------
+    results : dict
+        Dictionary with the results of the analysis for each combination of 'metric_x' and 'metric_y'.
+
+    Returns:
+    --------
+    str
+        A text report in English summarizing where significant differences were found.
+    """
+    report = "Based on the ANOVA tests, statistically significant differences in 'diff_score_minority_class_complexity' were observed according to 'class_prop_category' and 'best_method' across various combinations of 'metric_x' and 'metric_y'. The following combinations showed significant differences:\n\n"
+
+    for (metric_x, metric_y), result in results.items():
+        if result['p-value'] is not None and result['p-value'] < 0.05:
+            report += f"- For {metric_x} and {metric_y}, the test used was {result['test']} with a p-value of {result['p-value']:.6f} and a test statistic of {result['statistic']:.4f}.\n"
+
+    report += "\nThese results suggest that there are significant differences in 'diff_score_minority_class_complexity' across different levels of 'class_prop_category' and 'best_method' for the above combinations of 'metric_x' and 'metric_y'. Further post-hoc analysis is recommended to identify the specific groups that differ.\n"
+    
+    return report
+
+
+def perform_post_hoc_analysis(df, variable='diff_score_minority_class_complexity', factor1='class_prop_category', factor2='best_method'):
+    """
+    Performs post-hoc analysis using Tukey's HSD to identify specific group differences.
+
+    Parameters:
+    -----------
+    df : pd.DataFrame
+        The input DataFrame containing the data.
+    variable : str, optional (default='diff_score_minority_class_complexity')
+        The name of the variable to analyze.
+    factor1 : str, optional (default='class_prop_category')
+        The first factor to consider in the analysis.
+    factor2 : str, optional (default='best_method')
+        The second factor to consider in the analysis.
+
+    Returns:
+    --------
+    dict
+        Dictionary with the post-hoc analysis results for each combination of 'metric_x' and 'metric_y'.
+    """
+    post_hoc_results = {}
+
+    # Group data by 'metric_x' and 'metric_y'
+    grouped = df.groupby(['metric_x', 'metric_y'])
+    
+    for (metric_x, metric_y), group in grouped:
+        # Create a combined factor for post-hoc analysis
+        group['combined_factor'] = group[factor1].astype(str) + "_" + group[factor2].astype(str)
+        
+        # Ensure there are at least two groups with more than one observation each
+        group_sizes = group['combined_factor'].value_counts()
+        valid_groups = group_sizes[group_sizes > 1]
+
+        if len(valid_groups) > 1:
+            # Perform Tukey's HSD test
+            tukey_result = pairwise_tukeyhsd(endog=group[variable], groups=group['combined_factor'], alpha=0.05)
+            post_hoc_results[(metric_x, metric_y)] = tukey_result.summary()
+        else:
+            print(f"Not enough data for Tukey's HSD test for metric_x: {metric_x}, metric_y: {metric_y}.")
+    
+    return post_hoc_results
+
+def identify_significant_differences(post_hoc_results):
+    """
+    Identifies significant differences from the post-hoc analysis results.
+
+    Parameters:
+    -----------
+    post_hoc_results : dict
+        Dictionary containing the post-hoc Tukey HSD results for each combination of 'metric_x' and 'metric_y'.
+
+    Returns:
+    --------
+    dict
+        A dictionary with the combinations of 'metric_x' and 'metric_y' as keys and a list of significant differences as values.
+    """
+    significant_differences = {}
+
+    for (metric_x, metric_y), result in post_hoc_results.items():
+        # Convert the result to a DataFrame for easier filtering
+        result_df = pd.DataFrame(result.data[1:], columns=result.data[0])
+        
+        # Filter rows where 'reject' is True
+        significant_rows = result_df[result_df['reject'] == True]
+
+        if not significant_rows.empty:
+            significant_differences[(metric_x, metric_y)] = significant_rows[['group1', 'group2', 'meandiff', 'p-adj', 'lower', 'upper']].to_dict('records')
+
+    return significant_differences
+
+def calculate_grouped_statistics(df, diff='diff_score_most_complex_class', x_var='best_method'):
+    """
+    Calculates grouped statistics for the 'diff' variable based on 'x_var' and 'metric_y'.
+
+    Parameters:
+    -----------
+    df : pd.DataFrame
+        DataFrame containing the data.
+    diff : str, optional (default='diff_score_most_complex_class')
+        Column name for the variable for which to calculate statistics.
+    x_var : str, optional (default='best_method')
+        Column name for the grouping variable along the x-axis.
+
+    Returns:
+    --------
+    pd.DataFrame
+        DataFrame containing the grouped statistics.
+    """
+    # Group by the specified variables and calculate statistics
+    grouped_stats = df.groupby([x_var, 'metric_y'])[diff].agg(['median','mean', 'std', 'min', 'max', 'count']).reset_index()
+    
+    return grouped_stats
