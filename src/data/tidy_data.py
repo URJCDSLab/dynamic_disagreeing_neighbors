@@ -509,3 +509,42 @@ def create_pivot_table(df, diff='diff_score_most_complex_class', x_var='best_met
                                  aggfunc='first').reset_index()
     
     return pivot_table
+
+def calculate_score_differences_all(df_performance, df_complexity):
+    """
+    Calculate the differences between the score and 1 - complexity for minority_class_complexity and most_complex_class.
+    Merges performance data with complexity data and computes the differences.
+
+    Parameters:
+    -----------
+    df_performance : pandas.DataFrame
+        The DataFrame containing the performance scores. Must include 'dataset' and 'score' columns.
+
+    df_complexity : pandas.DataFrame
+        The DataFrame containing the complexity data. Must include 'dataset', 'method', 'minority_class_complexity',
+        and 'most_complex_class'.
+
+    Returns:
+    --------
+    pd.DataFrame
+        A merged DataFrame with calculated differences between the score and 1 - complexity for the relevant columns.
+    """
+    # Filter to keep only the 'global' method complexities
+    df_complexity_filtered = df_complexity[df_complexity['method'] == 'global'].copy()
+
+    # Drop unnecessary columns
+    df_complexity_filtered.drop(
+        columns=['method', 'dataset_complexity', 'majority_class_complexity', 'least_complex_class'], 
+        inplace=True
+    )
+
+    # Merge the performance and complexity data
+    df_combined = pd.merge(df_performance, df_complexity_filtered, on='dataset', how='inner')
+
+    # Calculate the differences between the score and 1 - complexity
+    df_combined['diff_score_minority_class_complexity'] = df_combined['cv_score'] - (1 - df_combined['minority_class_complexity'])
+    df_combined['diff_score_most_complex_class'] = df_combined['cv_score'] - (1 - df_combined['most_complex_class'])
+
+    df_combined.drop(columns=['params', 'cv_score_sd', 'is_best_method'], inplace=True)
+
+    return df_combined
