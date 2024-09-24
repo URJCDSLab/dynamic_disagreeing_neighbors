@@ -455,9 +455,9 @@ def prepare_data(df_description, df_score_differences, df_performance_results, k
         Merged DataFrame with filtered and categorized data.
     """
     # Define bins and labels for class_prop categories
-    bins = [0, 0.1, 0.2, 0.3, 0.4, 0.5]
+    bins = [0, 0.1, 0.2, 0.3, 0.4, float('inf')]
     labels = ['0-0.1', '0.1-0.2', '0.2-0.3', '0.3-0.4', '0.4-0.5']
-    
+
     # Create class_prop_category in df_description
     df_description['class_prop_category'] = pd.cut(df_description['class_prop'], bins=bins, labels=labels, include_lowest=True)
     
@@ -470,11 +470,22 @@ def prepare_data(df_description, df_score_differences, df_performance_results, k
 
     # Merge with best method information
     df_merged = df_filtered.merge(df_description[['dataset', 'class_prop_category']], on='dataset', how='inner')
-    df_merged = df_merged.merge(
-        df_performance_results[['dataset', 'best_method']].drop_duplicates(subset=['dataset']),
-        on='dataset',
-        how='inner'
-    )
+    
+    try:
+        df_merged = df_merged.merge(
+            df_performance_results[['dataset', 'best_method']].drop_duplicates(subset=['dataset']),
+            on='dataset',
+            how='inner'
+        )
+    except:
+        
+        pass
+    
+    # Create minority_class_complexity_category
+    df_merged['minority_class_complexity_category'] = pd.cut(df_merged['minority_class_complexity'], bins=bins, labels=labels, include_lowest=True)
+    
+    # Create most_complex_class_category
+    df_merged['most_complex_class_category'] = pd.cut(df_merged['most_complex_class'], bins=bins, labels=labels, include_lowest=True)
     
     return df_merged
 
