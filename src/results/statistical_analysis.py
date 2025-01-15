@@ -334,10 +334,10 @@ def evaluate_differences(df, variable='diff_score_minority_class_complexity', fa
         else:
             results[(metric_x, metric_y)] = {'test': 'Insufficient groups', 'p-value': None, 'statistic': None}
     
-    return results
+    return results, variable, factor1, factor2
 
 
-def generate_difference_report(results):
+def generate_difference_report(results, variable, factor1, factor2):
     """
     Generates a report explaining where significant differences were found based on ANOVA results.
 
@@ -351,13 +351,13 @@ def generate_difference_report(results):
     str
         A text report in English summarizing where significant differences were found.
     """
-    report = "Based on the ANOVA tests, statistically significant differences in 'diff_score_minority_class_complexity' were observed according to 'class_prop_category' and 'best_method' across various combinations of 'metric_x' and 'metric_y'. The following combinations showed significant differences:\n\n"
+    report = f"Based on the ANOVA tests, statistically significant differences in {variable} were observed according to {factor1} and {factor2} across various combinations of 'metric_x' and 'metric_y'. The following combinations showed significant differences:\n\n"
 
     for (metric_x, metric_y), result in results.items():
         if result['p-value'] is not None and result['p-value'] < 0.05:
             report += f"- For {metric_x} and {metric_y}, the test used was {result['test']} with a p-value of {result['p-value']:.6f} and a test statistic of {result['statistic']:.4f}.\n"
 
-    report += "\nThese results suggest that there are significant differences in 'diff_score_minority_class_complexity' across different levels of 'class_prop_category' and 'best_method' for the above combinations of 'metric_x' and 'metric_y'. Further post-hoc analysis is recommended to identify the specific groups that differ.\n"
+    report += f"\nThese results suggest that there are significant differences in {variable} across different levels of {factor1} and {factor2} for the above combinations of 'metric_x' and 'metric_y'. Further post-hoc analysis is recommended to identify the specific groups that differ.\n"
     
     return report
 
