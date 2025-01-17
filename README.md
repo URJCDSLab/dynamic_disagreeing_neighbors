@@ -119,7 +119,7 @@ Where:
 #### Results Summary:
 - **Stability:** DDN demonstrates reduced variability compared to kDN.
 - **Correlation:** DDN shows stronger alignment with classification performance metrics.
-- **Optimal Settings:** Best results achieved with \( k = 1 \) under global calculation conditions.
+- **Optimal Settings:** Best results achieved with \(k = 1\) under global calculation conditions.
 
 ## Contributions
 This work was supported by:
