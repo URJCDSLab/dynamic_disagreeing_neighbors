@@ -9,7 +9,7 @@ description = "Dynamic Disagreeing Neighbors: A complexity measure for classific
 authors = [
     { name = "Víctor Aceña" }
 ]
-license = { file = "LICENSE.txt" }
+license = { file = "LICENSE.txt", text = "GPL-3.0" }
 readme = "README.md"
 requires-python = ">=3.9"
 dependencies = [
@@ -19,12 +19,29 @@ dependencies = [
     "scikit-learn==1.6.1",
     "statsmodels==0.14.4",
     "seaborn==0.13.2",
-    "pyarrow==19.0.0",
-
+    "pyarrow==19.0.0"
+]
+keywords = ["machine-learning", "classification", "complexity-measures", "data-analysis", "supervised-problems", "data-complexity"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Scientific/Engineering :: Information Analysis",
+    "Topic :: Scientific/Engineering :: Mathematics",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Operating System :: OS Independent",
+]
+maintainers = [
+    { name = "Víctor Aceña", email = "victor.acena@urjc.es" }
 ]
 
 [project.urls]
-homepage = "https://github.com/Vacek-Ace/dynamic_disagreeing_neighbors" 
+homepage = "https://github.com/Vacek-Ace/dynamic_disagreeing_neighbors"
 
 [tool.setuptools.packages.find]
 include = ["dynamic_disagreeing_neighbors"]
@@ -34,3 +51,4 @@ dynamic_disagreeing_neighbors = [
     "data/*",
     "images/*"
 ]
+
