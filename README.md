@@ -83,8 +83,9 @@ The complexity of an instance is computed as:
 c(x_i) = \sum_{x_j \in N_k(x_i)} \frac{e^{-||x_j - x_i||_2}}{\sum_{x_j \in N_k(x_i)} e^{-||x_j - x_i||_2}} \cdot I_{[y_i \neq y_j]}
 ```
 Where:
-- \( N_k(x_i) \): Dynamic neighborhood of instance \( x_i \).
-- \( I \): Indicator function for class mismatch.
+- N<sub>k</sub>(x<sub>i</sub>): Dynamic neighborhood of instance x<sub>i</sub>.
+- I: Indicator function for class mismatch.
+
 
 ### Levels of Analysis
 1. **Instance-Level:** Measure complexity for each instance.
