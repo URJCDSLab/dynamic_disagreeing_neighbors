@@ -104,9 +104,9 @@ Where:
    - Metrics were evaluated both by partitioning and globally.
    - **Finding:** On average, there are no significant differences; however, DDN exhibits lower variability.
 2. **Optimal k Value:**
-   - Correlation analysis was performed for various \( k \) values for both global and partitioned complexity measures.
+   - Correlation analysis was performed for various \(k\) values for both global and partitioned complexity measures.
    - Complexity was calculated for the entire dataset, the most/least complex class, and majority/minority classes.
-   - **Finding:** \( k = 1 \) consistently delivers the best results with higher overall correlations.
+   - **Finding:** \(k = 1\) consistently delivers the best results with higher overall correlations.
 3. **Model-Specific Complexity Relationships:**
    - Analyzed complexity relationships across different ML models and performance metrics.
    - **Finding:** Minority class and most complex class performance show the strongest correlation with complexity, as expected.
@@ -119,7 +119,7 @@ Where:
 #### Results Summary:
 - **Stability:** DDN demonstrates reduced variability compared to kDN.
 - **Correlation:** DDN shows stronger alignment with classification performance metrics.
-- **Optimal Settings:** Best results achieved with \( k = 1 \) under global calculation conditions.
+- **Optimal Settings:** Best results achieved with \(k = 1\) under global calculation conditions.
 
 ## Contributions
 This work was supported by:
