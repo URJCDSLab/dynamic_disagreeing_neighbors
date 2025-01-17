@@ -4,7 +4,7 @@ setup(
     name='src',
     packages=find_packages(),
     version='0.1.0',
-    description='Dynamic K-Disagreeing Neighbors',
+    description='Dynamic Disagreeing Neighbors',
     author='Víctor Aceña',
-    license='',
+    license='GPL-3.0',
 )
