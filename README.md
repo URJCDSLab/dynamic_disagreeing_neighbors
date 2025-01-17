@@ -16,7 +16,7 @@ Dynamic Disagreeing Neighbors (DDN) is a novel complexity measure introduced to 
    ```
 2. Install dependencies:
    ```bash
-   pip install -r requirements.txt
+   pip install --editable .
    ```
 
 ## Project Structure

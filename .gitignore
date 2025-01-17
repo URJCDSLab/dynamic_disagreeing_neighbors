@@ -4,4 +4,4 @@ notebooks/.ipynb_checkpoints/*.ipynb
 
 src/__pychache__/*.pyc
 
-/src.egg-info
+*.egg-info/

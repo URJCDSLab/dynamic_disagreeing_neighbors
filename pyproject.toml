@@ -1,0 +1,36 @@
+[build-system]
+requires = ["setuptools>=64", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "dynamic_disagreeing_neighbors"
+version = "0.1.0"
+description = "Dynamic Disagreeing Neighbors: A complexity measure for classification."
+authors = [
+    { name = "Víctor Aceña" }
+]
+license = { file = "LICENSE.txt" }
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = [
+    "pandas==2.2.3",
+    "scipy==1.15.1",
+    "ipykernel==6.29.5",
+    "scikit-learn==1.6.1",
+    "statsmodels==0.14.4",
+    "seaborn==0.13.2",
+    "pyarrow==19.0.0",
+
+]
+
+[project.urls]
+homepage = "https://github.com/Vacek-Ace/dynamic_disagreeing_neighbors" 
+
+[tool.setuptools.packages.find]
+include = ["dynamic_disagreeing_neighbors"]
+
+[tool.setuptools.package-data]
+dynamic_disagreeing_neighbors = [
+    "data/*",
+    "images/*"
+]
