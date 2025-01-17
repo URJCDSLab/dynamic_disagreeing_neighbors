@@ -80,10 +80,10 @@ DDN employs the NCN classifier's approach to define neighborhoods:
 ### Complexity Calculation
 The complexity of an instance is computed as:
 ```math
-c(\bm{x}_i) = \sum_{\bm{x}_j \in N_k(\bm{x}_i)} \frac{e^{-||\bm{x}_j - \bm{x}_i||_2}}{\sum_{\bm{x}_j \in N_k(\bm{x}_i)} e^{-||\bm{x}_j - \bm{x}_i||_2}} \cdot I_{[y_i \neq y_j]}
+c(x_i) = \sum_{x_j \in N_k(x_i)} \frac{e^{-||x_j - x_i||_2}}{\sum_{x_j \in N_k(x_i)} e^{-||x_j - x_i||_2}} \cdot I_{[y_i \neq y_j]}
 ```
 Where:
-- \( N_k(\bm{x}_i) \): Dynamic neighborhood of instance \( \bm{x}_i \).
+- \( N_k(x_i) \): Dynamic neighborhood of instance \( x_i \).
 - \( I \): Indicator function for class mismatch.
 
 ### Levels of Analysis
@@ -92,12 +92,6 @@ Where:
 3. **Dataset-Level:** Average complexity across all instances.
 
 ## Experiments
-### Benchmarks
-The evaluation was performed on 65 binary classification datasets, considering the following aspects:
-
-- **Stability:** Evaluating variability across different runs and datasets.
-- **Correlation with Classification Errors:** Measuring how well the metric correlates with errors.
-- **Performance in Imbalanced Sampling (IS):** Examining how effectively the metric supports sampling tasks.
 
 ### Research Structure
 - **Method Extension:** A novel method extending kDN was developed, incorporating dynamic neighborhoods to create a "continuous kDN."
