@@ -7,40 +7,40 @@ def plot_individual_complexity_differences(df):
     # Plot for dataset_complexity_difference
     plt.figure(figsize=(12, 6))
     sns.boxplot(x='metric', y='dataset_complexity_difference', data=df)
-    plt.title('Differences in Dataset Complexity (global - mean_folds) by metric')
-    plt.xlabel('Metric')
+    plt.title('Differences in Dataset Complexity (global - mean_folds)')
+    plt.xlabel('Measure')
     plt.ylabel('Dataset Complexity Difference')
     plt.show()
 
     # Plot for majority_class_complexity_difference
     plt.figure(figsize=(12, 6))
     sns.boxplot(x='metric', y='majority_class_complexity_difference', data=df)
-    plt.title('Differences in Majority Class Complexity (global - mean_folds) by metric')
-    plt.xlabel('Metric')
+    plt.title('Differences in Majority Class Complexity (global - mean_folds)')
+    plt.xlabel('Measure')
     plt.ylabel('Majority Class Complexity Difference')
     plt.show()
 
     # Plot for minority_class_complexity_difference
     plt.figure(figsize=(12, 6))
     sns.boxplot(x='metric', y='minority_class_complexity_difference', data=df)
-    plt.title('Differences in Minority Class Complexity (global - mean_folds) by metric')
-    plt.xlabel('Metric')
+    plt.title('Differences in Minority Class Complexity (global - mean_folds)')
+    plt.xlabel('Measure')
     plt.ylabel('Minority Class Complexity Difference')
     plt.show()
 
     # Plot for most_complex_class_difference
     plt.figure(figsize=(12, 6))
     sns.boxplot(x='metric', y='most_complex_class_difference', data=df)
-    plt.title('Differences in Most Complex Class (global - mean_folds) by metric')
-    plt.xlabel('Metric')
+    plt.title('Differences in Most Complex Class (global - mean_folds)')
+    plt.xlabel('Measure')
     plt.ylabel('Most Complex Class Difference')
     plt.show()
 
     # Plot for least_complex_class_difference
     plt.figure(figsize=(12, 6))
     sns.boxplot(x='metric', y='least_complex_class_difference', data=df)
-    plt.title('Differences in Least Complex Class (global - mean_folds) by metric')
-    plt.xlabel('Metric')
+    plt.title('Differences in Least Complex Class (global - mean_folds)')
+    plt.xlabel('Measure')
     plt.ylabel('Least Complex Class Difference')
     plt.show()
 
