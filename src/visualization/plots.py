@@ -210,7 +210,7 @@ def plot_score_differences(df, performance_metric):
     plt.show()
     
 
-def plot_score_differences(df_merged, diff='diff_score_most_complex_class', x_var='best_method'):
+def plot_score_differences_vars(df_merged, diff='diff_score_most_complex_class', x_var='best_method'):
     """
     Plots score differences using Seaborn.
 
@@ -236,13 +236,13 @@ def plot_score_differences(df_merged, diff='diff_score_most_complex_class', x_va
             x=x_var,
             y=diff,
             hue="metric_y",
-            kind="violin",
-            inner="stick",
-            split=True,
+            kind="box",
+           # inner="stick",
+           # split=True,
             palette="pastel",
             legend_out=True  # Move legend outside the plot for better visibility
         )
-        g.fig.suptitle(f"Score differences for metric: {metric}", y=1.02)  # Set title above the plot
+        g.fig.suptitle(f"Score differences for {metric}", y=1.02)  # Set title above the plot
 
         # Get the legend and set its title and position
         legend = g._legend
@@ -258,6 +258,9 @@ def plot_score_differences(df_merged, diff='diff_score_most_complex_class', x_va
         
         # Add a horizontal line at y=0
         plt.axhline(0, color='black', linestyle='--', linewidth=1)
+
+        plt.ylabel('Minority Class complexity Difference')
+        plt.xlabel('Class Proportion')
 
         # Rotate x-axis labels for readability
         plt.xticks(rotation=45)

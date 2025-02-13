@@ -465,8 +465,11 @@ def prepare_data(df_description, df_score_differences, df_performance_results, k
     df_description.reset_index(inplace=True)
     df_description.rename(columns={'index': 'dataset'}, inplace=True)
 
-    # Filter data for the specified k value
-    df_filtered = df_score_differences[df_score_differences['k'] == k]
+    if k is not None:
+        # Filter data for the specified k value
+        df_filtered = df_score_differences[df_score_differences['k'] == k]
+    else:
+        df_filtered = df_score_differences.copy()
 
     # Merge with best method information
     df_merged = df_filtered.merge(df_description[['dataset', 'class_prop_category']], on='dataset', how='inner')
