@@ -266,3 +266,40 @@ def plot_score_differences_vars(df_merged, diff='diff_score_most_complex_class',
         plt.xticks(rotation=45)
         plt.tight_layout()
         plt.show()
+        
+# Function to plot residuals comparison (boxplot)
+def plot_residuals_comparison(df_resid):
+    plt.figure(figsize=(6, 6))
+    g = sns.catplot(
+        data=df_resid,
+        x="metric_y",
+        y="resid",
+        kind="box",
+        palette="pastel",
+        legend_out=True
+    )
+    g.fig.suptitle("Residuals comparison", y=1.02)
+    plt.axhline(0, color='black', linestyle='--', linewidth=1)
+    plt.ylabel("Residuals")
+    plt.xlabel("Complexity Measure")
+    plt.xticks(rotation=45)
+    plt.tight_layout()
+    plt.show()
+
+# Function to plot Observed vs Predicted for a group
+def plot_observed_vs_predicted(y_test, y_pred, group_label):
+    # Get colors for the scatter plots from the "pastel" palette
+    colors = sns.color_palette("pastel", 2)
+    if group_label == "ddn":
+        color = colors[0]
+    else:
+        color = colors[1]
+    
+    plt.figure(figsize=(8, 6))
+    plt.scatter(y_test, y_pred, alpha=0.7, color=color, edgecolor='k')
+    plt.plot([min(y_test), max(y_test)], [min(y_test), max(y_test)], 'r--', lw=2)
+    plt.xlabel("Observed Score")
+    plt.ylabel("Predicted Score")
+    plt.title(f"Observed vs Predicted ({group_label})")
+    plt.tight_layout()
+    plt.show()

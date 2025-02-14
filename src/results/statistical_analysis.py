@@ -723,3 +723,10 @@ def compare_means_between_metrics(df):
 
         print(f"Comparison: {col} - {test_name} between 'kdn' and 'ddn':")
         print(f"Statistic: {stat:.3f}, p-value: {p_val:.3f}\n{significance}\n")
+        
+
+# Function to print summary statistics of residuals
+def print_summary_statistics(df_resid):
+    print("Summary statistics for each measure:")
+    summary = df_resid.groupby("metric_y")["resid"].describe(percentiles=[i*0.1 for i in range(1,10)]).round(2)
+    print(summary)
