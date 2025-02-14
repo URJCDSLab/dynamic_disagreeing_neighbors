@@ -297,7 +297,7 @@ def calculate_score_differences(df_performance, df_complexity):
 
     # Drop unnecessary columns
     df_complexity_filtered.drop(
-        columns=['method', 'dataset_complexity', 'majority_class_complexity', 'least_complex_class'], 
+        columns=['method', 'majority_class_complexity', 'least_complex_class'], 
         inplace=True
     )
 
@@ -307,6 +307,7 @@ def calculate_score_differences(df_performance, df_complexity):
     # Calculate the differences between the score and 1 - complexity
     df_combined['diff_score_minority_class_complexity'] = df_combined['score'] - (1 - df_combined['minority_class_complexity'])
     df_combined['diff_score_most_complex_class'] = df_combined['score'] - (1 - df_combined['most_complex_class'])
+    df_combined['diff_score_dataset'] = df_combined['score'] - (1 - df_combined['dataset_complexity'])
 
     return df_combined
 
@@ -472,7 +473,7 @@ def prepare_data(df_description, df_score_differences, df_performance_results, k
         df_filtered = df_score_differences.copy()
 
     # Merge with best method information
-    df_merged = df_filtered.merge(df_description[['dataset', 'class_prop_category']], on='dataset', how='inner')
+    df_merged = df_filtered.merge(df_description[['dataset', 'class_prop_category', 'class_prop']], on='dataset', how='inner')
     
     try:
         df_merged = df_merged.merge(
