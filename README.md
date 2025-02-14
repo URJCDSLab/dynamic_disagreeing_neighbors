@@ -100,26 +100,19 @@ Where:
 - **Dataset Selection:** A total of 65 binary classification datasets with varying class imbalance levels were utilized.
 
 #### Key Questions:
-1. **Behavior of Metrics (Partitioned vs. Global):**
-   - Metrics were evaluated both by partitioning and globally.
-   - **Finding:** On average, there are no significant differences; however, DDN exhibits lower variability.
-2. **Optimal k Value:**
-   - Correlation analysis was performed for various \(k\) values for both global and partitioned complexity measures.
-   - Complexity was calculated for the entire dataset, the most/least complex class, and majority/minority classes.
-   - **Finding:** \(k = 1\) consistently delivers the best results with higher overall correlations.
-3. **Model-Specific Complexity Relationships:**
-   - Analyzed complexity relationships across different ML models and performance metrics.
-   - **Finding:** Minority class and most complex class performance show the strongest correlation with complexity, as expected.
-4. **Impact of Class Imbalance:**
-   - Investigated the relationship between complexity and performance at various imbalance levels.
-   - Results were analyzed for all models collectively and for the best-performing models separately.
-5. **Complexity Analysis:**
-   - Explored deeper insights into complexity but encountered challenges in extracting definitive patterns.
+1. **Adaptive Neighborhood Definition** Introducing dynamic neighborhoods that adjust based on local data density allows for a more precise capture of instance-level complexity. This results in a finer and more continuous estimation than the discrete values offered by \gls{kDN}.
 
-#### Results Summary:
-- **Stability:** DDN demonstrates reduced variability compared to kDN.
-- **Correlation:** DDN shows stronger alignment with classification performance metrics.
-- **Optimal Settings:** Best results achieved with \(k = 1\) under global calculation conditions.
+2. **Stability in Complexity Estimation** Experiments have shown that \gls{DDN} exhibits lower variability in complexity estimation at the instance, class, and dataset levels. This stability is especially important in scenarios with class imbalance, where robust estimates are crucial for making informed decisions regarding data preprocessing or sampling strategies.
+
+3. **Sensitivity to the \( k \) Parameter** The choice of \( k \) has a significant impact on the correlation between the estimated complexity and classifier performance. In particular, \gls{DDN} achieves its best correlation with low values of \( k \) (typically \( k=1 \)), whereas \gls{kDN} shows greater stability over a wider range (e.g., \( k=3 \) to \( k=8 \)). This suggests that the optimal \( k \) configuration may depend on both the complexity measure employed and performance metric of interest.
+
+4. **Superior Robustness at \( k=1 \)** Our experiments consistently show that for \( k=1 \), \gls{DDN} achieves higher correlations with classifier performance than \gls{kDN}. We hypothesize that this improvement is due to the dynamic neighborhood construction in \gls{DDN}. Even when \( k=1 \) is used, the neighborhood in \gls{DDN} is defined by the distance to the first support neighbor, which in high-density regions, results in a neighborhood that naturally includes multiple nearby points. This richer local context provides a more robust and smooth estimation of complexity in contrast to \gls{kDN}, where \( k=1 \) considers only the single nearest neighbor and thus offers a less informative measure.
+
+5. **Importance of Global Computation** Comparisons between global and partition-based complexity computations revealed that global complexity estimation tends to align more consistently with classifier performance. This finding simplifies the practical applicability that can be computed by computing the complexity of the full dataset without resorting to cross-validation, without sacrificing the quality of performance correlations.
+
+6. **Relevance in Difficult Classes** Strongest correlations with performance metrics such as the F1-score, \gls{GPS}, and \gls{MCC} were observed for the minority class and the class exhibiting higher complexity. This underscores the usefulness of complexity measures in identifying and focusing on the instances and subgroups that present greater classification challenges.
+
+7. **Effect of Class Proportion on Complexity-Performance Relationship:** Our experiments indicate that both \gls{kDN} and \gls{DDN} exhibit weaker alignment with classifier performance in highly imbalanced datasets, as evidenced by larger differences in metrics such as accuracy, F1-score, \gls{GPS}, and \gls{MCC}. This suggests that depending on the performance metric and degree of imbalance, a bias may be present in the complexity estimation. If confirmed, incorporating a correction to adjust for this bias could improve the overall assessment of the classification difficulty.
 
 ## Contributions
 This work was supported by:
