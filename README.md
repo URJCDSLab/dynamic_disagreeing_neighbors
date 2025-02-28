@@ -41,7 +41,7 @@ The repository is organized as follows:
 │   ├── utils.py          # Helper functions and utilities
 ├── LICENSE.txt           # License file (GPL-3.0)
 ├── README.md             # Project documentation
-└── setup.py              # Installation script
+└── pyproject.toml        # Installation script
 ```
 
 ## Usage
