@@ -361,4 +361,87 @@ def plot_complexity_differences(df_differences):
     ax.legend(title="Complexity Measure")
 
     plt.show()
+
+def plot_line_correlations_new(df, score_metric, method_labels={"global": "Global", "mean_folds": "Mean Folds"}):
+    """
+    Plot line graphs of correlations for each complexity metric by k, method, and complexity_metric.
+    Colors represent complexity metrics (kDN, DDN), and line styles represent methods (Global, Mean Folds).
+    The maximum value of each line is highlighted with a black dot.
+
+    Parameters:
+    -----------
+    df : pandas.DataFrame
+        DataFrame containing columns: 'k', 'method', 'complexity_metric', and correlation metrics.
+    score_metric : str
+        Performance metric name for plot titles.
+    method_labels : dict, optional
+        Dictionary mapping original method names to custom labels.
+
+    Returns:
+    --------
+    None
+    """
+
+    # List of correlation columns to plot
+    correlation_columns = [
+        'corr_dataset_complexity', 
+        'corr_majority_class_complexity', 
+        'corr_minority_class_complexity', 
+        'corr_most_complex_class', 
+        'corr_least_complex_class'
+    ]
+
+    # Replace method labels BEFORE plotting
+    df = df.copy()
+    df["method"] = df["method"].replace(method_labels)
     
+    # Replace metric labels
+    df["complexity_metric"] = df["complexity_metric"].replace({"ddn": "DDN", "kdn": "kDN"})
+
+    pastel_colors = sns.color_palette("pastel")
+    custom_palette = {"kDN": pastel_colors[0], "DDN": pastel_colors[1]}
+
+    for col in correlation_columns:
+        plt.figure(figsize=(14, 8))
+
+        # Create line plot
+        ax = sns.lineplot(
+            data=df,
+            x='k',
+            y=col,
+            hue='complexity_metric',
+            style='method',
+            palette=custom_palette,
+            markers=True,
+            dashes={'Global': '', 'Mean Folds': (5, 5)},
+            hue_order=["kDN", "DDN"],
+            style_order=['Global', 'Mean Folds']
+        )
+
+        # Mark the highest value on each line with a black dot
+        for (complexity_metric, method), group_data in df.groupby(['complexity_metric', 'method']):
+            max_idx = group_data[col].idxmax()
+            max_k = group_data.loc[max_idx, 'k']
+            max_val = group_data.loc[max_idx, col]
+
+            ax.plot(max_k, max_val, marker='*', color='darkgoldenrod', markersize=10, markeredgecolor='black', markeredgewidth=0.5)
+
+        print(f'Correlation of {(col.replace("corr", "")).replace("_", " ").title()} with Performance ({score_metric})')
+        # Customize plot
+        #plt.title(f'Correlation of {(col.replace("corr", "")).replace("_", " ").title()} with Performance ({score_metric})')
+        plt.ylabel('Spearman Correlation')
+        plt.xlabel('k')
+        plt.grid(axis='y', linestyle='--', alpha=1)
+        
+
+        # Obtaining the legend handles and labels
+        handles, labels = ax.get_legend_handles_labels()
+
+        # Extracting the first two handles and labels
+        clean_handles = [handles[1], handles[2], handles[4], handles[5]]
+        clean_labels = ['kDN', 'DDN', 'Global', 'Mean Folds']
+
+        # Creating the legend
+        ax.legend(clean_handles, clean_labels, title='', loc='lower left')
+
+        plt.show()

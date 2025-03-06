@@ -101,3 +101,62 @@ def train_and_evaluate_model(data, label):
     
     return best_model, X_test, y_test, y_pred
 
+def get_max_correlations(df):
+    """
+    Compute the maximum correlation values and corresponding k values for each complexity level, method, and complexity metric.
+
+    Parameters:
+    -----------
+    df : pandas.DataFrame
+        DataFrame containing columns 'k', 'method', 'complexity_metric', and complexity correlation measures.
+
+    Returns:
+    --------
+    pandas.DataFrame
+        DataFrame summarizing the maximum correlation values and corresponding k for each complexity level, method, and complexity metric.
+    """
+    results = []
+    correlation_columns = [
+        'corr_dataset_complexity', 
+        'corr_majority_class_complexity', 
+        'corr_minority_class_complexity', 
+        'corr_most_complex_class', 
+        'corr_least_complex_class'
+    ]
+
+    for col in correlation_columns:
+        for (method, complexity_metric), group_data in df.groupby(['method', 'complexity_metric']):
+            max_idx = group_data[col].idxmax()
+            max_k = group_data.loc[max_idx, 'k']
+            max_val = group_data.loc[max_idx, col]
+
+            results.append({
+                'Complexity Level': col.replace('corr_', ''),
+                'Method': method,
+                'Complexity Metric': complexity_metric,
+                'k': max_k,
+                'Max Correlation': max_val
+            })
+
+    results_df = pd.DataFrame(results)
+
+    return results_df
+
+def get_top_complexity_levels(results_df):
+    """
+    Devuelve las filas correspondientes a los niveles de complejidad que contienen la mayor correlación,
+    agrupadas por Method y Complexity Metric.
+
+    Parameters:
+    -----------
+    results_df : pandas.DataFrame
+        DataFrame generado por la función get_max_correlation_by_k.
+
+    Returns:
+    --------
+    pandas.DataFrame
+        DataFrame con las filas correspondientes a los niveles de complejidad con la mayor correlación por grupo.
+    """
+
+    idx_max = results_df.groupby(['Method', 'Complexity Metric'])['Max Correlation'].idxmax()
+    return results_df.loc[idx_max].reset_index(drop=True)
