@@ -1,4 +1,5 @@
 import numpy as np
+import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 
@@ -303,3 +304,61 @@ def plot_observed_vs_predicted(y_test, y_pred, group_label):
     plt.title(f"Observed vs Predicted ({group_label})")
     plt.tight_layout()
     plt.show()
+
+def plot_complexity_differences(df_differences):
+    # Filter columns representing complexity differences
+    complexity_diff_columns = [col for col in df_differences.columns if col.endswith("_difference")]
+
+    # Melt DataFrame to long format
+    df_melted = df_differences.melt(
+        id_vars=["metric"],
+        value_vars=complexity_diff_columns,
+        var_name="Complexity Measure",
+        value_name="Difference"
+    )
+
+    # Custom labels and order
+    custom_labels = {
+        "dataset_complexity_difference": "Dataset",
+                "majority_class_complexity_difference": "Majority Class",
+        "least_complex_class_difference": "Least Complex",
+        "minority_class_complexity_difference": "Minority Class",
+        "most_complex_class_difference": "Most Complex"
+    }
+
+    # Apply labels
+    df_melted["Complexity Measure"] = df_melted["Complexity Measure"].map(custom_labels)
+
+    # Replace metric labels
+    df_melted["metric"] = df_melted["metric"].replace({"ddn": "DDN", "kdn": "kDN"})
+
+    # Set categorical order
+    order = list(custom_labels.values())
+    df_melted["Complexity Measure"] = pd.Categorical(df_melted["Complexity Measure"], categories=order, ordered=True)
+
+    # Define color palette
+    pastel_colors = sns.color_palette("pastel")
+    custom_palette = {"kDN": pastel_colors[0], "DDN": pastel_colors[1]}
+
+    # Plot boxplot
+    plt.figure(figsize=(12, 6))
+    ax = sns.boxplot(
+        data=df_melted,
+        x="Complexity Measure",
+        y="Difference",
+        hue="metric",
+        palette=custom_palette,
+        order=order
+    )
+
+    # Customize plot
+    plt.xticks(rotation=45, ha="right")
+    plt.xlabel("")
+    plt.ylabel("")
+    plt.ylim(-0.1, 0.1)
+
+    # Set legend title
+    ax.legend(title="Complexity Measure")
+
+    plt.show()
+    
