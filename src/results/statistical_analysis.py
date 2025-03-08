@@ -730,3 +730,54 @@ def print_summary_statistics(df_resid):
     print("Summary statistics for each measure:")
     summary = df_resid.groupby("metric_y")["resid"].describe(percentiles=[i*0.1 for i in range(1,10)]).round(2)
     print(summary)
+
+def compare_global_vs_mean_folds(df):
+    """
+    Compare 'global' method against 'mean_folds' method for each k and complexity metric.
+
+    Parameters:
+    -----------
+    df : pandas.DataFrame
+        DataFrame containing columns 'k', 'method', 'complexity_metric', and correlation metrics.
+
+    Returns:
+    --------
+    wins_df : pandas.DataFrame
+        DataFrame summarizing how often 'global' method outperforms 'mean_folds' method.
+    """
+    # Columns to use for the statistical analysis
+    corr_columns = [col for col in df.columns if col.startswith('corr_')]
+
+    # Split the DataFrame into two DataFrames, one for each method
+    global_df = df[df['method'] == 'global']
+    mean_folds_df = df[df['method'] == 'mean_folds']
+
+    # Merge the DataFrames on the 'k' and 'complexity_metric' columns
+    merged_df = pd.merge(global_df, mean_folds_df, on=['k', 'complexity_metric'], suffixes=('_global', '_mean_folds'))
+
+    # Count how many times 'global' outperforms 'mean_folds' for each k and complexity_metric
+    results = []
+    for (k, complexity_metric), group in merged_df.groupby(['k', 'complexity_metric']):
+        global_wins = (group[[f"{col}_global" for col in corr_columns]].values > 
+                       group[[f"{col}_mean_folds" for col in corr_columns]].values).sum()
+        results.append({
+            'k': k,
+            'Complexity Metric': complexity_metric,
+            'Global Wins': global_wins,
+            'Total Comparisons': len(corr_columns),
+            'Win Percentage': global_wins / len(corr_columns)
+        })
+
+    # Create DataFrame with results
+    wins_df = pd.DataFrame(results)
+
+    # Overall totals
+    global_wins = wins_df['Global Wins'].sum()
+    total_comparisons = wins_df['Total Comparisons'].sum()
+    percentage = global_wins / total_comparisons
+
+    # Print overall summary
+    print(f"Overall, method 'Global' outperforms 'Mean Folds' in {global_wins} "
+          f"out of {total_comparisons} comparisons across all k values and complexity metrics ({percentage:.2%}).")
+
+    return wins_df
