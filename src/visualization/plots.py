@@ -198,8 +198,7 @@ def plot_score_differences(df, performance_metric):
     # Set y-axis ticks to show every 0.1 increment
     y_min, y_max = ax.get_ylim()  # Get the current y-axis limits
     ax.set_yticks(np.arange(np.floor(y_min * 10) / 10, np.ceil(y_max * 10) / 10 + 0.1, 0.1))
-
-
+    
     # Set plot titles and labels
     plt.title(f'Differences Between Score and 1 - Complexity for {performance_metric}')
     plt.xlabel('k')
@@ -230,20 +229,25 @@ def plot_score_differences_vars(df_merged, diff='diff_score_most_complex_class',
         The function returns None as it directly creates plots.
     """
     
-    # Create violin plots for each unique metric
+    # Replace metric labels
+    df_merged["metric_y"] = df_merged["metric_y"].replace({"ddn": "DDN", "kdn": "kDN"})
+    
+    colors = sns.color_palette("pastel", 2)
+        
+    # Create boxplot plots for each unique metric
     for metric in df_merged['metric_x'].unique():
+        print(f"{y_title} for {metric}")
+
         g = sns.catplot(
             data=df_merged[df_merged['metric_x'] == metric],
             x=x_var,
             y=diff,
             hue="metric_y",
             kind="box",
-           # inner="stick",
-           # split=True,
-            palette="pastel",
+            palette = {"DDN": colors[1], "kDN": colors[0]},
             legend_out=True  # Move legend outside the plot for better visibility
         )
-        g.fig.suptitle(f"Score differences for {metric}", y=1.02)  # Set title above the plot
+        g.fig.suptitle(f"", y=1.02)  # Set title above the plot
 
         # Get the legend and set its title and position
         legend = g._legend
@@ -260,7 +264,9 @@ def plot_score_differences_vars(df_merged, diff='diff_score_most_complex_class',
         # Add a horizontal line at y=0
         plt.axhline(0, color='black', linestyle='--', linewidth=1)
 
-        plt.ylabel(f'{y_title}')
+        plt.tick_params(axis='both', labelsize=12)
+
+        plt.ylabel("")
         plt.xlabel('Class Proportion')
 
         # Rotate x-axis labels for readability
