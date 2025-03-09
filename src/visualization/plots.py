@@ -359,6 +359,7 @@ def plot_complexity_differences(df_differences):
 
     # Set legend title
     ax.legend(title="Complexity Measure")
+    ax.tick_params(axis='both', labelsize=12)
 
     plt.show()
 
