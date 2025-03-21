@@ -23,25 +23,33 @@ Dynamic Disagreeing Neighbors (DDN) is a novel complexity measure introduced to 
 The repository is organized as follows:
 
 ```
-├── data/                 # Folder to store input datasets
-│   ├── preprocessed/     # Preprocessed datasets in Parquet format
-│   ├── raw/              # Raw datasets in Parquet format, converted from raw_csv
-│   ├── raw_csv/          # Raw datasets in CSV format
-│   └── results/          # Results from experiments
-├── images/               # Folder to store project-related visualizations
-├── notebooks/            # Jupyter notebooks for experimentation and analysis
-├── results/              # Folder for output files such as logs and metrics
-├── src/                  # Source code of the project
-│   ├── data/             # Data handling utilities and scripts
-│   ├── experiments/      # Scripts for running experiments
-│   ├── model/            # Implementation of the main algorithm (DDN)
-│   │   ├── ddn.py        # Main implementation of the DDN algorithm
-│   ├── results/          # Utilities for managing experiment results
-│   ├── visualization/    # Scripts for generating visualizations and plots
-│   ├── utils.py          # Helper functions and utilities
-├── LICENSE.txt           # License file (GPL-3.0)
-├── README.md             # Project documentation
-└── pyproject.toml        # Installation script
+dynamic_disagreeing_neighbors/
+├── data/                          # Folder to store input datasets
+│   ├── preprocessed/              # Preprocessed datasets in Parquet format
+│   ├── raw/                       # Raw datasets in Parquet format, converted from raw_csv
+│   ├── raw_csv/                   # Raw datasets in CSV format
+│   └── results/                   # Results from experiments
+│
+├── images/                        # Folder to store project-related visualizations
+│
+├── notebooks/                     # Jupyter notebooks for experimentation and analysis
+│
+├── results/                       # Folder for output files such as logs and metrics
+│
+├── src/                           # Source code of the project
+│   └── dynamic_disagreeing_neighbors/  # Main Python package (matches pyproject.toml name)
+│       ├── data/                  # Data handling utilities and scripts
+│       ├── experiments/           # Scripts for running experiments
+│       ├── model/                 # Implementation of the main algorithm (DDN)
+│       │   └── ddn.py             # Main implementation of the DDN algorithm
+│       ├── results/               # Utilities for managing experiment results
+│       ├── visualization/         # Scripts for generating visualizations and plots
+│       └── utils.py               # Helper functions and utilities
+│
+├── LICENSE.txt                    # License file (GPL-3.0)
+├── README.md                      # Project documentation
+└── pyproject.toml                 # Installation script
+
 ```
 
 ## Usage

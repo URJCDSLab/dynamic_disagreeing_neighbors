@@ -46,8 +46,8 @@ homepage = "https://github.com/Vacek-Ace/dynamic_disagreeing_neighbors"
 repository = "https://github.com/Vacek-Ace/dynamic_disagreeing_neighbors.git"
 bug-tracker = "https://github.com/Vacek-Ace/dynamic_disagreeing_neighbors/issues"
 
-
-include = ["dynamic_disagreeing_neighbors*"]
+[tool.setuptools]
+package-dir = {"" = "src"}
 
 [tool.setuptools.package-data]
 dynamic_disagreeing_neighbors = [
