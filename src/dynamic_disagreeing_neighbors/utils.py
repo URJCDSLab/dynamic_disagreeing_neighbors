@@ -3,7 +3,7 @@ import os
 import pandas as pd
 import numpy as np
 from scipy.stats import ttest_rel
-from sklearn.metrics import matthews_corrcoef, make_scorer, confusion_matrix, mean_squared_error
+from sklearn.metrics import matthews_corrcoef, make_scorer, confusion_matrix, r2_score
 from sklearn.tree import DecisionTreeRegressor
 from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.pipeline import Pipeline
@@ -92,12 +92,13 @@ def train_and_evaluate_model(data, label):
     # Fit GridSearchCV on the training set
     grid.fit(X_train, y_train)
     
-    print(f"[{label}] Best parameters:", grid.best_params_)
-    print(f"[{label}] Best validation score (neg MSE):", grid.best_score_)
-    
     # Select the best model found and predict on the test set
     best_model = grid.best_estimator_
     y_pred = best_model.predict(X_test)
+    
+    print(f"[{label}] Best parameters:", grid.best_params_)
+    print(f"[{label}] Best validation score (neg MSE):", grid.best_score_)
+    print(f"[{label}] r2 score:", r2_score(y_test, y_pred))
     
     return best_model, X_test, y_test, y_pred
 
