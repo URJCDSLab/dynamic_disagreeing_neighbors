@@ -3,7 +3,8 @@ requires = ["setuptools>=64", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "dynamic_disagreeing_neighbors"
+# Nombre corregido para publicación
+name = "dynamic-disagreeing-neighbors"
 version = "0.1.0"
 description = "Dynamic Disagreeing Neighbors: A complexity measure for classification."
 authors = [
@@ -21,7 +22,6 @@ dependencies = [
     "seaborn>=0.12",
     "pyarrow>=12.0"
 ]
-
 keywords = ["machine-learning", "classification", "complexity-measures", "data-analysis", "supervised-problems", "data-complexity"]
 classifiers = [
     "Development Status :: 4 - Beta",
@@ -46,12 +46,12 @@ homepage = "https://github.com/Vacek-Ace/dynamic_disagreeing_neighbors"
 repository = "https://github.com/Vacek-Ace/dynamic_disagreeing_neighbors.git"
 bug-tracker = "https://github.com/Vacek-Ace/dynamic_disagreeing_neighbors/issues"
 
-
-include = ["dynamic_disagreeing_neighbors*"]
+[tool.setuptools]
+# Descubre automáticamente el paquete principal
+packages = { find = {} }
 
 [tool.setuptools.package-data]
 dynamic_disagreeing_neighbors = [
     "data/*",
     "images/*"
 ]
-

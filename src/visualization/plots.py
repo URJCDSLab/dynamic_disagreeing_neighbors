@@ -452,3 +452,75 @@ def plot_line_correlations_new(df, score_metric, method_labels={"global": "Globa
         ax.legend(clean_handles, clean_labels, title='', loc='lower left')
 
         plt.show()
+
+def plot_decile_distribution(
+    output_path='images/sorted_complexity_plot.png',
+    show_fig=True
+):
+    """
+    Generates and saves a styled line plot of a hardcoded decile distribution.
+
+    Args:
+        output_path (str): Path to save the figure. If None, figure is not saved.
+        title (str): The title of the plot.
+        xlabel (str): The label for the x-axis.
+        ylabel (str): The label for the y-axis.
+        show_fig (bool): If True, displays the plot after saving.
+    
+    Returns:
+        matplotlib.axes.Axes: The Axes object of the generated plot.
+    """
+    # 1. Hardcoded decile data from the table
+    ddn_deciles = [0.02, 0.14, 0.19, 0.22, 0.25, 0.32, 0.37, 0.51, 0.68, 1.00, 1.00]
+    kdn_deciles = [0.20, 0.20, 0.20, 0.20, 0.20, 0.40, 0.40, 0.40, 0.60, 0.84, 1.00]
+    percentiles = list(range(0, 101, 10))
+    
+    # 2. Prepare the data for plotting
+    df_ddn = pd.DataFrame({
+        'Complexity': ddn_deciles,
+        'Percentile': percentiles,
+        'Complexity Measure': 'DDN'
+    })
+    df_kdn = pd.DataFrame({
+        'Complexity': kdn_deciles,
+        'Percentile': percentiles,
+        'Complexity Measure': 'kDN'
+    })
+    df_plot = pd.concat([df_ddn, df_kdn])
+
+    # 3. Set the plot style
+    sns.set_theme(style="white", context="talk")
+    plt.figure(figsize=(10, 8))
+
+    # 4. Define the color palette
+    colors = sns.color_palette("pastel", 2)
+    palette = {"DDN": colors[1], "kDN": colors[0]}
+
+    # 5. Generate the line plot
+    ax = sns.lineplot(
+        data=df_plot,
+        x='Percentile',
+        y='Complexity',
+        hue='Complexity Measure',
+        palette=palette,
+        linewidth=2.5,
+        marker='o',
+        markersize=12,
+        alpha=0.7,
+        markeredgecolor='black',
+        markeredgewidth=1.5
+    )
+
+    # 6. Customize and finalize the plot
+    ax.set_xticks(percentiles)
+    plt.tight_layout()
+
+    # 7. Save and/or show the figure
+    if output_path:
+        plt.savefig(output_path, dpi=300, bbox_inches='tight')
+        print(f"Plot saved to {output_path}")
+
+    if show_fig:
+        plt.show()
+        
+    return ax
