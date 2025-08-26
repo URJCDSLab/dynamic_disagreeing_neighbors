@@ -519,7 +519,6 @@ def plot_decile_distribution(
     # 7. Save and/or show the figure
     if output_path:
         plt.savefig(output_path, dpi=300, bbox_inches='tight')
-        print(f"Plot saved to {output_path}")
 
     if show_fig:
         plt.show()

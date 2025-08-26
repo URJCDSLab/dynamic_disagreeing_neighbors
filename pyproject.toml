@@ -47,10 +47,14 @@ repository = "https://github.com/Vacek-Ace/dynamic_disagreeing_neighbors.git"
 bug-tracker = "https://github.com/Vacek-Ace/dynamic_disagreeing_neighbors/issues"
 
 [tool.setuptools]
+# 1. Le dice a setuptools que el código fuente está en la carpeta 'src'.
 package-dir = {"" = "src"}
+
+# 2. Le dice que busque paquetes automáticamente DENTRO de la carpeta 'src'.
 packages = { find = { where = ["src"] } }
 
 [tool.setuptools.package-data]
+# Esto ya lo tenías bien, le dice qué datos incluir DENTRO de tu paquete.
 dynamic_disagreeing_neighbors = [
     "data/*",
     "images/*"
