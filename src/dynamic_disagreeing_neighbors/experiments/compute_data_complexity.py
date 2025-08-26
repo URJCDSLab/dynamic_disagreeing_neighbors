@@ -7,9 +7,9 @@ warnings.filterwarnings('ignore')
 from sklearn.model_selection import StratifiedKFold
 from sklearn.preprocessing import StandardScaler
 
-from src.utils import get_store_name, NpEncoder
-from src.model.instance_hardness import *
-from src.model.ddn import *
+from dynamic_disagreeing_neighbors.utils import get_store_name, NpEncoder
+from dynamic_disagreeing_neighbors.model.instance_hardness import *
+from dynamic_disagreeing_neighbors.model.ddn import *
 
 def process_experiments(max_k = 11, evaluate=True):
     for experiment in [

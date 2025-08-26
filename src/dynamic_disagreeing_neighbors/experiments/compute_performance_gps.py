@@ -9,7 +9,7 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.svm import SVC
 from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
 
-from src.utils import named_scorer, get_store_name, NpEncoder, gps_score
+from dynamic_disagreeing_neighbors.utils import named_scorer, get_store_name, NpEncoder, gps_score
 
 for experiment in [
     'a9a', 

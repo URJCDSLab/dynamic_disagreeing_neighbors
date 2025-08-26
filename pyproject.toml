@@ -47,8 +47,12 @@ repository = "https://github.com/Vacek-Ace/dynamic_disagreeing_neighbors.git"
 bug-tracker = "https://github.com/Vacek-Ace/dynamic_disagreeing_neighbors/issues"
 
 [tool.setuptools]
+<<<<<<< HEAD
 # Descubre automáticamente el paquete principal
 packages = { find = {} }
+=======
+package-dir = {"" = "src"}
+>>>>>>> 9a3c8812cbd46d221a9b2707f86a3176b7932b41
 
 [tool.setuptools.package-data]
 dynamic_disagreeing_neighbors = [

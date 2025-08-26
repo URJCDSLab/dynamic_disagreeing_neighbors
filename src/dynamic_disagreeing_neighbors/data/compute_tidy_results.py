@@ -1,6 +1,6 @@
 import os
 import pandas as pd
-from src.data.tidy_data import *
+from dynamic_disagreeing_neighbors.data.tidy_data import *
 
 # Crear la carpeta "data/results" si no existe
 output_dir = os.path.join('data', 'results')
