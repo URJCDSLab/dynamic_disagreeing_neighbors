@@ -3,5 +3,6 @@ notebooks/.ipynb_checkpoints/*.ipynb
 *.pyc
 
 src/__pychache__/*.pyc
+__pycache__/
 
 *.egg-info/

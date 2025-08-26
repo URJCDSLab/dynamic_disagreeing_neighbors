@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 # Nombre corregido para publicación
-name = "dynamic-disagreeing-neighbors"
+name = "dynamic_disagreeing_neighbors"
 version = "0.1.0"
 description = "Dynamic Disagreeing Neighbors: A complexity measure for classification."
 authors = [
@@ -47,12 +47,8 @@ repository = "https://github.com/Vacek-Ace/dynamic_disagreeing_neighbors.git"
 bug-tracker = "https://github.com/Vacek-Ace/dynamic_disagreeing_neighbors/issues"
 
 [tool.setuptools]
-<<<<<<< HEAD
-# Descubre automáticamente el paquete principal
-packages = { find = {} }
-=======
 package-dir = {"" = "src"}
->>>>>>> 9a3c8812cbd46d221a9b2707f86a3176b7932b41
+packages = { find = { where = ["src"] } }
 
 [tool.setuptools.package-data]
 dynamic_disagreeing_neighbors = [
