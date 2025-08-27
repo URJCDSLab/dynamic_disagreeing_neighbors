@@ -80,26 +80,35 @@ def run_timing_experiment():
     print("\nResults saved to results/timing_experiment_results.csv")
 
     # 5. Plot the results
-    sns.set_theme(style="whitegrid", context="talk")
-    plt.figure(figsize=(10, 8))
+    sns.set_theme(style="white", context="talk")
+    plt.figure(figsize=(12, 6))
+
+    colors = sns.color_palette("pastel", 2)
+    palette = {"DDN": colors[1], "kDN": colors[0]}
     
+    # 5. Generate the line plot with updated styling
     ax = sns.lineplot(
         data=df_results,
         x='n_samples',
         y='time',
         hue='method',
+        palette=palette,           # Use custom palette
         marker='o',
         markersize=12,
-        linewidth=3
+        linewidth=2.5,
+        alpha=0.7,                 # Add transparency
+        markeredgecolor='black',   # Add black edges to markers
+        markeredgewidth=1.5
     )
     
-    ax.set_title(f'Runtime Comparison (k={K})')
     ax.set_xlabel('Number of Samples (n)')
     ax.set_ylabel('Execution Time (seconds)')
     ax.set(xscale="log", yscale="log")
     
+    sns.despine(trim=False) # Ensure full box is drawn
+    
     plt.tight_layout()
-    plt.savefig('images/timing_experiment_plot.png', dpi=300)
+    plt.savefig('images/timing_experiment_plot.png', dpi=300, bbox_inches='tight')
     print("Plot saved to images/timing_experiment_plot.png")
     plt.show()
 
