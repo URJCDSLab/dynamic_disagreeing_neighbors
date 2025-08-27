@@ -115,11 +115,19 @@ def process_sota_complexity_measures(evaluate=True):
 
         try:
             data = pd.read_parquet(f'data/preprocessed/{experiment}.parquet')
-            X = data.drop(columns=['y']).values
-            y = data.y.values
         except Exception as e:
             print(f"Could not load data for {experiment}. Error: {e}")
             continue
+
+        # If the dataset is too large, take a representative sample.
+        MAX_SAMPLES = 35000  # Adjusted limit based on the computation error: Unable to allocate 18.4 GiB for an array with shape (49749, 49749) and data type float64  
+        if len(data) > MAX_SAMPLES:
+            print(f"Dataset is too large ({len(data)} samples). Taking a random sample of {MAX_SAMPLES}.")
+            data = data.sample(n=MAX_SAMPLES, random_state=42)
+            # Reset the index to a simple 0-to-N sequence after sampling.
+            data = data.reset_index(drop=True)
+            
+        y = data.y.values
 
         # This object calculates many measures at once
         cm = ClassificationMeasures(data, target_col='y')
