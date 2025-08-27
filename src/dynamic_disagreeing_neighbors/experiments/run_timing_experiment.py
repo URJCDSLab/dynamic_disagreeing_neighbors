@@ -20,7 +20,7 @@ def run_timing_experiment():
     # --- Experiment Configuration ---
     SAMPLE_SIZES = [100, 1000, 5000, 10000] # You can add 100000 for the final run
     N_FEATURES = 10
-    K = 5  # A fixed k for a fair comparison
+    K = 7  # A fixed k for a fair comparison
     N_REPEATS = 3  # Number of times to repeat each measurement for stability
 
     results = []
@@ -76,7 +76,7 @@ def run_timing_experiment():
     print("\n--- Experiment Finished ---")
     print("Results:")
     print(df_results)
-    df_results.to_csv('results/timing_experiment_results.csv', index=False)
+    df_results.to_csv(f'results/timing_experiment_results_{N_FEATURES}_{K}.csv', index=False)
     print("\nResults saved to results/timing_experiment_results.csv")
 
     # 5. Plot the results
