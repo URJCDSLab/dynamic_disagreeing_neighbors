@@ -161,3 +161,36 @@ def get_top_complexity_levels(results_df):
 
     idx_max = results_df.groupby(['Method', 'Complexity Metric'])['Max Correlation'].idxmax()
     return results_df.loc[idx_max].reset_index(drop=True)
+
+
+def create_ddn_kdn_test_dataset():
+    """
+    Creates a simple 4-point dataset designed to highlight the difference
+    in complexity calculation between DDN and kDN when k=1.
+
+    The dataset consists of a target point (A) and three other points (B, C, D)
+    that are all equidistant from it. One of the neighbors (B) shares the same
+    class as the target, while the other two (C, D) have a different class.
+
+    Returns:
+        tuple[np.ndarray, np.ndarray]: A tuple containing:
+            - X (np.ndarray): A (4, 2) array of coordinates for points A, B, C, D.
+            - y (np.ndarray): A (4,) array of class labels (0 or 1) for the points.
+    """
+    # Coordinates for points A, B, C, D
+    X = np.array([
+        [0, 0],   # Point A (Target)
+        [1, 0],   # Point B
+        [-1, 0],  # Point C
+        [0, 1]    # Point D
+    ])
+
+    # Class labels for points A, B, C, D
+    y = np.array([
+        0,        # Point A (Class 0)
+        0,        # Point B (Class 0)
+        1,        # Point C (Class 1)
+        1         # Point D (Class 1)
+    ])
+
+    return X, y
