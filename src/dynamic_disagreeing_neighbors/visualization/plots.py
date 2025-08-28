@@ -491,7 +491,7 @@ def plot_decile_distribution(
 
     # 3. Set the plot style
     sns.set_theme(style="white", context="talk")
-    plt.figure(figsize=(10, 8))
+    plt.figure(figsize=(12, 6))
 
     # 4. Define the color palette
     colors = sns.color_palette("pastel", 2)
