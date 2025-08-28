@@ -93,8 +93,13 @@ def run_timing_experiment():
         y='time',
         hue='method',
         palette=palette,           # Use custom palette
+        palette=palette,           # Use custom palette
         marker='o',
         markersize=12,
+        linewidth=2.5,
+        alpha=0.7,                 # Add transparency
+        markeredgecolor='black',   # Add black edges to markers
+        markeredgewidth=1.5
         linewidth=2.5,
         alpha=0.7,                 # Add transparency
         markeredgecolor='black',   # Add black edges to markers
@@ -107,7 +112,10 @@ def run_timing_experiment():
     
     sns.despine(trim=False) # Ensure full box is drawn
     
+    sns.despine(trim=False) # Ensure full box is drawn
+    
     plt.tight_layout()
+    plt.savefig('images/timing_experiment_plot.png', dpi=300, bbox_inches='tight')
     plt.savefig('images/timing_experiment_plot.png', dpi=300, bbox_inches='tight')
     print("Plot saved to images/timing_experiment_plot.png")
     plt.show()
