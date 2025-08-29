@@ -242,6 +242,65 @@ def extract_complexity_df():
     
     return df
 
+def extract_sota_complexity_df():
+    """
+    Reads the JSON results from the SOTA complexity experiments and
+    compiles them into a single pandas DataFrame.
+    """
+    data = []
+
+    datasets = [
+        'a9a', 'appendicitis', 'australian', 'backache', 'banknote',
+        'breastcancer', 'bupa', 'cleve', 'cod-rna', 'colon-cancer', 'diabetes',
+        'flare', 'fourclass', 'german_numer', 'haberman', 'heart', 'housevotes84',
+        'ilpd', 'ionosphere', 'kr_vs_kp', 'liver-disorders', 'mammographic',
+        'mushroom', 'r2', 'sonar', 'splice', 'svmguide1', 'svmguide3',
+        'transfusion', 'w1a', 'w2a', 'w3a', 'w4a', 'w5a', 'w6a', 'w7a', 'w8a',
+        'yeast1', 'ecoli-0-1-4-7_vs_2-3-5-6', 'yeast3', 'analcatdata_lawsuit',
+        'vehicle3', 'spect', 'yeast-0-2-5-7-9_vs_3-6-8', 'page-blocks-1-3_vs_4',
+        'ecoli-0-1-4-6_vs_5', 'ecoli3', 'ecoli4', 'vehicle1', 'page-blocks0',
+        'vehicle0', 'yeast6', 'glass6', 'yeast4', 'glass2', 'yeast5', 'glass4',
+        'ecoli1', 'new-thyroid1', 'ecoli2', 'glass0', 'dermatology-6',
+        'glass1', 'newthyroid2', 'vehicle2'
+    ]
+
+    # The metrics that are stored in each JSON file
+    sota_metrics = ['N1', 'N2', 'F1', 'CLD']
+
+    for dataset in datasets:
+        # Path to the new results folder
+        file_path = f'results/complexity_sota/{dataset}.json'
+        
+        if os.path.exists(file_path):
+            try:
+                with open(file_path, 'r') as fin:
+                    complexity_results = json.load(fin)
+                
+                for metric in sota_metrics:
+                    if metric in complexity_results:
+                        complexity_data = complexity_results[metric]
+                        
+                        # Append a new row for each metric found in the file
+                        data.append({
+                            'dataset': dataset,
+                            'metric': metric,
+                            'dataset_complexity': complexity_data.get('global', None),
+                            'majority_class_complexity': complexity_data.get('class 0', None),
+                            'minority_class_complexity': complexity_data.get('class 1', None)
+                        })
+
+            except (json.JSONDecodeError, KeyError) as e:
+                print(f"Error reading or processing file {file_path}: {e}")
+
+    # Convert the list of dictionaries to a DataFrame
+    df = pd.DataFrame(data)
+
+    # Create columns for the max and min complexity between majority and minority classes
+    if not df.empty:
+        df['most_complex_class'] = df[['majority_class_complexity', 'minority_class_complexity']].max(axis=1)
+        df['least_complex_class'] = df[['majority_class_complexity', 'minority_class_complexity']].min(axis=1)
+    
+    return df
 
 def calculate_differences(df):
     # Pivot the DataFrame to have `global` and `mean_folds` as columns for easy difference calculation
@@ -311,7 +370,48 @@ def calculate_score_differences(df_performance, df_complexity):
 
     return df_combined
 
+def calculate_sota_score_differences(df_performance, df_sota_complexity):
+    """
+    Calculates differences between performance scores and 1 - SOTA complexity measures.
 
+    Merges performance data with the SOTA complexity data and computes the differences.
+
+    Parameters:
+    -----------
+    df_performance : pandas.DataFrame
+        DataFrame with performance scores. Must include 'dataset' and 'score' columns.
+        It can also have a 'performance_metric' column to distinguish rows.
+
+    df_sota_complexity : pandas.DataFrame
+        DataFrame with SOTA complexity data from extract_sota_complexity_df().
+        Must include 'dataset', 'metric', and the various complexity columns.
+
+    Returns:
+    --------
+    pd.DataFrame
+        A merged DataFrame with calculated differences.
+    """
+    # Create a copy to avoid modifying the original DataFrame
+    df_sota_copy = df_sota_complexity.copy()
+
+    # Drop unnecessary columns for a cleaner result, ignore errors if already dropped
+    if 'majority_class_complexity' in df_sota_copy.columns:
+        df_sota_copy.drop(
+            columns=['majority_class_complexity', 'least_complex_class'], 
+            inplace=True,
+            errors='ignore'
+        )
+
+    # Merge the performance and complexity data on the dataset
+    # This will combine each performance metric with each SOTA complexity metric for each dataset
+    df_combined = pd.merge(df_performance, df_sota_copy, on='dataset', how='inner')
+
+    # Calculate the differences between the score and 1 - complexity
+    df_combined['diff_score_minority_class_complexity'] = df_combined['score'] - (1 - df_combined['minority_class_complexity'])
+    df_combined['diff_score_most_complex_class'] = df_combined['score'] - (1 - df_combined['most_complex_class'])
+    df_combined['diff_score_dataset'] = df_combined['score'] - (1 - df_combined['dataset_complexity'])
+
+    return df_combined
 
 def extract_best_model_performance(results_dir='results/performance'):
     """
