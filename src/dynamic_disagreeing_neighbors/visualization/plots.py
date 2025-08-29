@@ -524,3 +524,139 @@ def plot_decile_distribution(
         plt.show()
         
     return ax
+
+def plot_sota_score_differences(
+    df_merged, 
+    diff_col='diff_score_most_complex_class', 
+    x_var='class_prop_category', 
+    y_title='Score Difference'
+):
+    """
+    Plots score differences for multiple complexity measures using Seaborn.
+
+    This function is designed to compare DDN, kDN, and other SOTA measures.
+
+    Parameters:
+    -----------
+    df_merged : pd.DataFrame
+        Merged DataFrame containing all necessary information for plotting.
+        Must include columns for the performance metric, the complexity metric,
+        the difference score, and the x-axis variable.
+    diff_col : str, optional
+        Column name for the score differences to plot on the y-axis.
+    x_var : str, optional
+        Column name for the x-axis variable.
+    y_title : str, optional
+        Title for the y-axis.
+    """
+    
+    # 1. Define a consistent color palette for all complexity measures
+    # Using a larger palette to accommodate all measures
+    df_merged["metric_y"] = df_merged["metric_y"].replace({"ddn": "DDN", "kdn": "kDN"})
+    
+    colors = sns.color_palette("pastel", 6)
+    palette = {
+        "kDN": colors[0],
+        "DDN": colors[1],
+        "N1": colors[2],
+        "N2": colors[3],
+        "F1": colors[4],
+        "CLD": colors[5]
+    }
+    
+    for perf_metric in df_merged['metric_x'].unique():
+        print(f"--- Plotting for Performance Metric: {perf_metric} ---")
+
+        # Filter the data for the current performance metric
+        df_plot = df_merged[df_merged['metric_x'] == perf_metric]
+
+        # 2. Create the catplot (boxplot)
+        g = sns.catplot(
+            data=df_plot,
+            x=x_var,
+            y=diff_col,
+            hue="metric_y",  # The column with the complexity measure names
+            kind="box",
+            palette=palette,
+            height=6,
+            aspect=1.5,
+            legend_out=True
+        )
+        
+        # 3. Customize the plot and legend
+        # g.fig.suptitle(f"{y_title} vs. {x_var.replace('_', ' ').title()} for {perf_metric}", y=1.03)
+        
+        legend = g._legend
+        legend.set_title("Complexity Measure")
+        
+        # Style the legend frame
+        frame = legend.get_frame()
+        frame.set_facecolor('white')
+        frame.set_edgecolor('grey')
+        frame.set_linewidth(1.2)
+        frame.set_alpha(0.8)
+        
+        # 4. Add reference line and labels
+        ax = g.ax
+        ax.axhline(0, color='black', linestyle='--', linewidth=1)
+        
+        ax.tick_params(axis='both', labelsize=12)
+        ax.set_ylabel(y_title)
+        ax.set_xlabel(x_var.replace('_', ' ').title())
+        
+        # Rotate x-axis labels for readability
+        for item in ax.get_xticklabels():
+            item.set_rotation(45)
+            
+        plt.tight_layout(rect=[0, 0, 0.9, 1]) # Adjust layout to make space for legend
+        plt.show()
+        
+def plot_sota_residuals_comparison(df_resid):
+    colors = sns.color_palette("pastel", 6)
+    palette = {
+        "kDN": colors[0],
+        "DDN": colors[1],
+        "N1": colors[2],
+        "N2": colors[3],
+        "F1": colors[4],
+        "CLD": colors[5]
+    }
+    plt.figure(figsize=(6, 6))
+    g = sns.catplot(
+        data=df_resid,
+        x="metric_y",
+        y="resid",
+        kind="box",
+        palette=palette,
+        legend_out=True
+    )
+    g.fig.suptitle("", y=1.02)
+    plt.axhline(0, color='black', linestyle='--', linewidth=1)
+    plt.ylabel("Residuals")
+    plt.xlabel("")
+    plt.xticks(rotation=45)
+    plt.tight_layout()
+    plt.show()
+    
+def plot_sota_observed_vs_predicted(y_test, y_pred, group_label):
+    # Get colors for the scatter plots from the "pastel" palette
+    colors = sns.color_palette("pastel", 6)
+    palette = {
+        "kDN": colors[0],
+        "DDN": colors[1],
+        "N1": colors[2],
+        "N2": colors[3],
+        "F1": colors[4],
+        "CLD": colors[5]
+    }
+    
+    color = palette[group_label]
+    
+    plt.figure(figsize=(8, 6))
+    plt.scatter(y_test, y_pred, alpha=0.7, color=color, edgecolor='k')
+    plt.plot([min(y_test), max(y_test)], [min(y_test), max(y_test)], 'r--', lw=2)
+    plt.xlabel("Observed Score")
+    plt.ylabel("Predicted Score")
+    plt.title(f"")
+    plt.tight_layout()
+    plt.show()
