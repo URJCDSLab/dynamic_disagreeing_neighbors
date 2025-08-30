@@ -563,6 +563,7 @@ def plot_sota_score_differences(
         "F1": colors[4],
         "CLD": colors[5]
     }
+    hue_order_list = ["DDN", "kDN", "N1", "N2", "F1", "CLD"]
     
     for perf_metric in df_merged['metric_x'].unique():
         print(f"--- Plotting for Performance Metric: {perf_metric} ---")
@@ -575,18 +576,19 @@ def plot_sota_score_differences(
             data=df_plot,
             x=x_var,
             y=diff_col,
-            hue="metric_y",  # The column with the complexity measure names
+            hue="metric_y", 
+            hue_order=hue_order_list,
             kind="box",
             palette=palette,
             height=6,
             aspect=1.5,
-            legend_out=True
+            legend_out=False
         )
         
         # 3. Customize the plot and legend
         # g.fig.suptitle(f"{y_title} vs. {x_var.replace('_', ' ').title()} for {perf_metric}", y=1.03)
-        
-        legend = g._legend
+        sns.move_legend(g, "upper right")
+        legend = g.legend 
         legend.set_title("Complexity Measure")
         
         # Style the legend frame
@@ -602,13 +604,13 @@ def plot_sota_score_differences(
         
         ax.tick_params(axis='both', labelsize=12)
         ax.set_ylabel(y_title)
-        ax.set_xlabel(x_var.replace('_', ' ').title())
+        ax.set_xlabel('Class Proportion')
         
         # Rotate x-axis labels for readability
         for item in ax.get_xticklabels():
             item.set_rotation(45)
             
-        plt.tight_layout(rect=[0, 0, 0.9, 1]) # Adjust layout to make space for legend
+        plt.tight_layout() # Adjust layout to make space for legend
         plt.show()
         
 def plot_sota_residuals_comparison(df_resid):
