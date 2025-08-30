@@ -662,3 +662,55 @@ def plot_sota_observed_vs_predicted(y_test, y_pred, group_label):
     plt.title(f"")
     plt.tight_layout()
     plt.show()
+    
+def plot_residual_histogram(y_test, y_pred, group_label):
+    """
+    Calculates residuals and plots them as a styled histogram.
+
+    Args:
+        y_test (array-like): The true observed scores.
+        y_pred (array-like): The scores predicted by the model.
+        group_label (str): The name of the group for color selection 
+                           (e.g., "DDN", "kDN", "N1").
+    """
+    # 1. Calculate the residuals (errors)
+    residuals = y_pred - y_test
+
+    # 2. Set the plot style to match your project's aesthetic
+    sns.set_theme(style="white", context="talk")
+    plt.figure(figsize=(8, 6))
+
+    # 3. Define the consistent color palette
+    colors = sns.color_palette("pastel", 6)
+    palette = {
+        "kDN": colors[0],
+        "DDN": colors[1],
+        "N1": colors[2],
+        "N2": colors[3],
+        "F1": colors[4],
+        "CLD": colors[5]
+    }
+    
+    # Get the specific color for this plot
+    color = palette.get(group_label, "gray") # Default to gray if label not in palette
+
+    # 4. Generate the histogram with the same styling
+    sns.histplot(
+        residuals,
+        color=color,
+        edgecolor='k',      # Black edges on bars
+        alpha=0.7,          # Semi-transparent bars
+        kde=True,           # Add a smooth density curve
+        line_kws={'linewidth': 2.5} # Style the KDE line
+    )
+
+    # 5. Add a vertical line at zero to represent a perfect prediction
+    plt.axvline(0, color='r', linestyle='--', lw=2)
+    plt.xlim(-0.4, 0.4)
+    
+    # 6. Customize and show the plot
+    plt.xlabel("Residuals")
+    plt.ylabel("")
+    plt.title(f"")
+    plt.tight_layout()
+    plt.show()
